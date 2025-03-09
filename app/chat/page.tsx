@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "sonner"
+import PageContainer from "@/components/page-container"
+import DashboardLayout from "@/components/dashboard-layout"
 
 interface Message {
   id: string
@@ -18,7 +20,7 @@ interface Message {
   timestamp: Date
 }
 
-export default function ChatPage() {
+ function AIChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -33,10 +35,7 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
 
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+ 
 
   const handleSendMessage = async () => {
     if (!input.trim()) return
@@ -106,7 +105,9 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <PageContainer>
+
+    <div className="space-y-8 grid grid-cols-1">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">AI Chat Assistant</h1>
         <p className="text-muted-foreground">Ask questions or get help with your tasks using our AI assistant.</p>
@@ -273,9 +274,15 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+    </PageContainer>
   )
 }
 
+export default function ChatPage(){
+  return <DashboardLayout>
+    <AIChat />
+  </DashboardLayout>
+}
 // Helper function to generate mock responses
 function generateMockResponse(input: string): string {
   const responses = [

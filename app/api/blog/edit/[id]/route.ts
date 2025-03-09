@@ -1,19 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import mongoose from 'mongoose';
 import BlogPost from '@/lib/models/blog-post'; // Adjust the import path as necessary
 
-export const config = {
-    api: {
-        bodyParser: true,
-    },
-};
 
-export const PATCH = async (req: NextRequest, { params }: { params: { id: string } }) => {
-    const { id } = params;
+
+export const PATCH = async (req: NextRequest,  {params}: {params: Promise<{ id: string }>}) => {
+    const { id } = await params;
     const { title, excerpt, content, coverImage, author, status, tags } = await req.json();
 
     if (!id) {
-        return NextResponse.json({ message: 'Missing blog post ID' }, { status: 400 });
+        return Response.json({ message: 'Missing blog post ID' }, { status: 400 });
     }
 
     try {
@@ -26,13 +22,13 @@ export const PATCH = async (req: NextRequest, { params }: { params: { id: string
         );
 
         if (!updatedBlogPost) {
-            return NextResponse.json({ message: 'Blog post not found' }, { status: 404 });
+            return Response.json({ message: 'Blog post not found' }, { status: 404 });
         }
 
-        return NextResponse.json(updatedBlogPost, { status: 200 });
+        return Response.json(updatedBlogPost, { status: 200 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return Response.json({ message: 'Internal server error' }, { status: 500 });
     } finally {
         mongoose.connection.close();
     }

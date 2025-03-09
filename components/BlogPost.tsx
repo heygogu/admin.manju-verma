@@ -3,23 +3,14 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Eye, Tag, ChevronLeft, Share2 } from 'lucide-react';
+import { Calendar, Clock, Eye, Tag } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 
 const BlogPost = ({ post }:any) => {
-    const {
-      author,
-      content,
-      coverImage,
-      createdAt,
-      publishDate,
-      tags,
-      title,
-      updatedAt,
-      views,
-    } = post?.data;
-  console.log('post', post);
+  if(!post?.data) return null;
+   
+   const { content, coverImage, publishDate, tags, title, updatedAt, views,author } = post?.data;
     // Format dates
     const publishedDate = new Date(publishDate);
     const formattedPublishDate = publishedDate.toLocaleDateString('en-US', {

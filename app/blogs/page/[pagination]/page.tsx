@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Edit, Eye, FileText, Filter, Image, Lock, LockOpen, MoreHorizontal, Pencil, Plus, Search, Trash2, User } from 'lucide-react';
@@ -74,15 +74,23 @@ function BlogPage() {
 
       setIsLoading(true);
     }
+    let urlSearchParams = new URLSearchParams();
     try {
-      const apiRes:any=await axios.get(`/api/blog?page=${params?.pagination}&limit=10`)
-      console.log(apiRes)
+      if (searchTerm) {
+        urlSearchParams.set("search", searchTerm);
+      }
+      urlSearchParams.set("limit", "10");
+      urlSearchParams.set("page", String(params?.pagination || "1"));
+
+      const apiRes: any = await axios.get(
+        `/api/blog?${urlSearchParams.toString()}`
+      );
       setBlogListing((prev)=>({
         ...prev,
-        data:apiRes.data.data,
-        count:apiRes.data.count,
-        currentPage:apiRes.data.currentPage,
-        totalPages:apiRes.data.totalPages
+        data:apiRes?.data?.data,
+        count:apiRes?.data?.count,
+        currentPage:apiRes?.data?.currentPage,
+        totalPages:apiRes?.data?.totalPages
       }))
     } catch (error) {
       
@@ -93,9 +101,18 @@ function BlogPage() {
   }
 
   const handlePageChange = (page: number) => {
-    router.replace(`/blogs/page/${page}`);
-  }
-
+    const query= searchParams.toString()
+    router.push(`/blogs/page/${page}?${query}`);
+  };
+  const handleSearch = (value: string) => {
+    
+    let query = new URLSearchParams(searchParams.toString());
+    query.set("search", value);
+    if(!value){
+      query.delete("search")
+    }
+    router.replace(`/blogs/page/1?${query.toString()}`);
+  };
   const handleDeleteBlog = (id: string) => async () => {
     try {
       await axios.delete(`/api/blog/delete/${id}`);
@@ -105,9 +122,20 @@ function BlogPage() {
     }
   }
 
+  let timeout: NodeJS.Timeout;
+  const debounceSearch = (value: string) => {
+    setSearchTerm(value);
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      handleSearch(value);
+    }, 500);
+  };
+
   useEffect(() => {
     initData(true);
-  }, [params?.pagination]);
+  }, [params?.pagination,searchParams.get("search")]);
 
 
   const blogColumns: ColumnDef<any>[] = [
@@ -235,11 +263,11 @@ function BlogPage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem className="cursor-pointer">
+                    {/* <DropdownMenuItem className="cursor-pointer">
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator /> */}
                     <DropdownMenuItem onClick={handleDeleteBlog(row.original?._id)} className="text-destructive cursor-pointer">
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete
@@ -282,7 +310,7 @@ function BlogPage() {
                     placeholder="Search by blog title or description..."
                     className="pl-9"
                     value={searchTerm}
-                    onChange={(e) => {}}
+                    onChange={(e) => debounceSearch(e.target.value)}
                   />
                 </div>
                 <div className="flex gap-2">
@@ -330,7 +358,7 @@ function BlogPage() {
                     currentPage={Number(params?.pagination) || 1}
                     itemsPerPage={Number(searchParams.get("limit")) || 10}
                     totalDataCount={blogListing?.count}
-                    onPageChange={(page) => {}}
+                    onPageChange={handlePageChange}
                   />
                 </div>
               ) : (
@@ -345,7 +373,9 @@ function BlogPage() {
 export default function Blog(){
   return (
     <DashboardLayout>
+      <Suspense fallback={<div>Loading...</div>}>
       <BlogPage />
+      </Suspense>
     </DashboardLayout>
   )
 }

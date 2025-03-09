@@ -8,7 +8,8 @@ import {
   FileText,
   BarChart3,
   MessageSquare,
-  Mail
+  Mail,
+  Users2
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -38,9 +39,9 @@ import {
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Manju",
+    email: "business.contentqueries@gmail.com",
+    avatar: "https://media.licdn.com/dms/image/v2/D4D03AQGTLWnjp7ZAZg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1681108382213?e=1747267200&v=beta&t=uJGzWvdykGknAnW4J-TEBwLFVSwPMoHrt-jq0io8424",
   },
 
   navMain: [
@@ -51,31 +52,27 @@ const data = {
       isActive: true,
 
     },
+   
     {
-      title: "Mails",
-      icon: Mail,
-      url: "/gmail",
-    },
-    {
-      title: "Blog",
+      title: "Blogs",
       icon: FileText,
       url: "/blogs/page/1",
     },
     {
-      title: "Analytics",
-      icon: BarChart3,
-      url: "/analytics",
+      title: "Clients",
+      icon: Users2,
+      url: "/clients/page/1",
     },
-    {
-      title: "AI Chat",
-      icon: MessageSquare,
-      url: "/chat",
-    },
-    {
-      title: "Settings",
-      icon: Settings,
-      url: "/settings",
-    },
+    // {
+    //   title: "AI Chat",
+    //   icon: MessageSquare,
+    //   url: "/chat",
+    // },
+    // {
+    //   title: "Settings",
+    //   icon: Settings,
+    //   url: "/settings",
+    // },
     
 
   ],

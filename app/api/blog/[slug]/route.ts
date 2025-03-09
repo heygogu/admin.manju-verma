@@ -1,21 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
-import Blog from "@/lib/models/blog-post"; // Import your Mongoose Blog model
+import { NextRequest } from "next/server";
+import Blog from "@/lib/models/blog-post";
 import connectToDatabase from "@/lib/db";
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
-    const { slug } = await params;
+export async function GET(
+  request: NextRequest,
+  {params}: {params: Promise<{ slug: string }>}
+) {
+  const {slug} = await params;
+  
   try {
-    await connectToDatabase(); // Connect to MongoDB
-
-    const blog = await Blog.findOne(
-        { slug: slug }
-    )
-    return NextResponse.json({
-      data: blog,
+    await connectToDatabase();
     
+    const blog = await Blog.findOne({ slug });
+    
+    if (!blog) {
+      return new Response(JSON.stringify({ error: "Blog not found" }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    return new Response(JSON.stringify({ data: blog }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error("Error fetching blogs:", error);
-    return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
+    console.error("Error fetching blog:", error);
+    return new Response(JSON.stringify({ error: "Failed to fetch blog" }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }

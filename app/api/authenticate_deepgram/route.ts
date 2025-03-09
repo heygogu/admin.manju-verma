@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
@@ -6,15 +5,15 @@ export async function GET() {
     const apiKey = process.env.NEXT_PUBLIC_DEEPGRAM_KEY;
 
     if (!apiKey) {
-      return NextResponse.json(
+      return Response.json(
         { error: "API key not configured" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ key: apiKey });
+    return Response.json({ key: apiKey });
   } catch (error) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Internal server error" },
       { status: 500 }
     );

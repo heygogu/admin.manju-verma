@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 type Data = {
   generatedContent?: string;
@@ -11,13 +11,13 @@ export async function POST(req: NextRequest) {
     const { transcription } = await req.json();
 
     if (!transcription || typeof transcription !== 'string' || transcription.trim() === '') {
-      return NextResponse.json({ error: 'Transcription is missing or invalid.' }, { status: 400 }); // Edge Case: Missing or Invalid Transcription
+      return Response.json({ error: 'Transcription is missing or invalid.' }, { status: 400 }); // Edge Case: Missing or Invalid Transcription
     }
 
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_KEY; // Store your API key in environment variables!
     if (!apiKey) {
       console.error("NEXT_PUBLIC_GEMINI_KEY is not set in environment variables.");
-      return NextResponse.json({ error: 'Gemini API key is missing.  Set GEMINI_API_KEY in your .env file.' }, { status: 500 }); // Edge Case: Missing API Key
+      return Response.json({ error: 'Gemini API key is missing.  Set GEMINI_API_KEY in your .env file.' }, { status: 500 }); // Edge Case: Missing API Key
     }
 
     const genAI = new GoogleGenerativeAI(apiKey) ;
@@ -76,13 +76,13 @@ export async function POST(req: NextRequest) {
     const text = response.text();
 
     if (!text) {
-      return NextResponse.json({ error: 'Failed to generate content from Gemini.  The model may have refused to answer based on the prompt.' }, { status: 500 }); // Edge Case: Gemini Refusal
+      return Response.json({ error: 'Failed to generate content from Gemini.  The model may have refused to answer based on the prompt.' }, { status: 500 }); // Edge Case: Gemini Refusal
     }
 
-    return NextResponse.json({ text: text });
+    return Response.json({ text: text });
 
   } catch (error: any) {
     console.error("Error during Gemini API call:", error);
-    return NextResponse.json({ error: 'Error generating content: ' + error.message }, { status: 500 }); // Edge Case: General API Error
+    return Response.json({ error: 'Error generating content: ' + error.message }, { status: 500 }); // Edge Case: General API Error
   }
 }

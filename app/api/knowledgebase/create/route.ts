@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { initPinecone } from "@/lib/pinecone";
 
 export async function POST(req: NextRequest) {
   const { indexName } = await req.json();
   if (!indexName) {
-    return NextResponse.json({ error: "Index name is required" }, { status: 400 });
+    return Response.json({ error: "Index name is required" }, { status: 400 });
   }
 
   const pinecone = await initPinecone();
@@ -12,17 +12,17 @@ export async function POST(req: NextRequest) {
   // Create index only if it doesn't exist
   const existingIndexes = await pinecone.listIndexes();
   if (existingIndexes?.indexes?.some((idx:any) => idx.name === indexName)) {
-    return NextResponse.json({ message: "Knowledge base already exists" });
+    return Response.json({ message: "Knowledge base already exists" });
   }
 
   // Let's try using the vectorDimension property which might be the correct one
-  await pinecone.createIndex({
-    name: indexName,
-    spec: {
-      vectorDimension: 768, // Using the possible correct property name
-      metric: "cosine",
-    }
-  });
+  // await pinecone.createIndex({
+  //   name: indexName,
+  //   spec: {
+  //     vectorDimension: 768, // Using the possible correct property name
+  //     metric: "cosine",
+  //   }
+  // });
 
-  return NextResponse.json({ message: `Knowledge base '${indexName}' created!` });
+  // return Response.json({ message: `Knowledge base '${indexName}' created!` });
 }

@@ -1,19 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import mongoose from 'mongoose';
 import BlogPost, { IBlogPost } from '@/lib/models/blog-post'; // Adjust the import path as necessary
 import connectToDatabase from '@/lib/db';
-
-export const config = {
-    api: {
-        bodyParser: true,
-    },
-};
 
 export const POST = async (req: NextRequest) => {
     const { title, excerpt, content, coverImage, author, status, tags } = await req.json();
 
     if (!title || !excerpt || !content || !author) {
-        return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+        return Response.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
     try {
@@ -31,10 +25,10 @@ export const POST = async (req: NextRequest) => {
 
         const savedBlogPost = await newBlogPost.save();
 
-        return NextResponse.json(savedBlogPost, { status: 201 });
+        return Response.json(savedBlogPost, { status: 201 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+        return Response.json({ message: 'Internal server error' }, { status: 500 });
     } finally {
         mongoose.connection.close();
     }

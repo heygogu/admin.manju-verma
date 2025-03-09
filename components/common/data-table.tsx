@@ -83,8 +83,8 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="">
-      <ScrollArea className="h-full rounded-md border border-common ">
-        <Table className="relative">
+      <ScrollArea className="h-full rounded-md ">
+        <Table className="relative border">
 
           <TableHeader className=' focus:bg-primary whitespace-nowrap'>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -122,10 +122,10 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : (
-              <TableRow>
+              <TableRow className=''>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center "
                 >
                   No results.
                 </TableCell>

@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { useRouter } from 'next/navigation';
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Eye, EyeOff, Loader, Lock, Mail } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import axios from "axios";
+import { Login } from "./actions";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,6 +18,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [isPending,startTransition]=useTransition()
  
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,24 +26,27 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      // In a real app, you would call your authentication API here
-      // For demo purposes, we'll simulate a successful login after a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulate successful login
-      if (email === "admin@example.com" && password === "password") {
-        toast("Login Successful", {
-          
-          description: "Welcome back to the admin dashboard!",
-        });
-        router.push("/dashboard");
-      } else {
-        throw new Error("Invalid credentials");
+      const payload={
+        email,
+        password
       }
+      
+     startTransition(async()=>{
+      const result = await Login(payload)
+      if(result.success){
+        toast("Login Successful", {
+          description: "You have successfully logged in.",
+        });
+        router.push("/dashboard")
+      }else{
+        toast.error("Login Failed", {
+          description: "Please check your credentials and try again.",
+        });
+       }
+     })
+
     } catch (error) {
-      toast("Login Failed", {
-        
-        
+      toast.error("Login Failed", {
         description: "Please check your credentials and try again.",
       });
     } finally {
@@ -73,7 +79,7 @@ export default function LoginPage() {
                     id="email"
                     type="email"
                     placeholder="admin@example.com"
-                    className="pl-10"
+                    className="pl-10 placeholder:text-sm"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -83,27 +89,27 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="pl-10"
+                    className="pl-10 placeholder:text-sm"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="link"
                     size="icon"
-                    className="absolute right-1 top-1"
+                    className="absolute right-1 top-0"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
                       <Eye className="h-4 w-4" />
+                    ) : (
+                      <EyeOff className="h-4 w-4" />
                     )}
                     <span className="sr-only">
                       {showPassword ? "Hide password" : "Show password"}
@@ -112,13 +118,14 @@ export default function LoginPage() {
                 </div>
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+                {isPending?<span><Loader className="h-4 w-4 animate-spin"/></span>:""}
+                {isPending ? "Logging in..." : "Login"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
-              Demo credentials: admin@example.com / password
+              
             </p>
           </CardFooter>
         </Card>

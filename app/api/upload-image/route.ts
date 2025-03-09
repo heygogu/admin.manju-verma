@@ -1,12 +1,7 @@
-import { NextResponse } from "next/server";
+
 import cloudinary from "@/lib/cloudinary";
 import { Readable } from "stream";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +9,7 @@ export async function POST(req: Request) {
     const file = formData.get("image") as Blob | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      return Response.json({ error: "No file uploaded" }, { status: 400 });
     }
 
     // Convert Blob to Buffer
@@ -36,12 +31,12 @@ export async function POST(req: Request) {
       stream.pipe(uploadStream);
     });
 
-    return NextResponse.json({
+    return Response.json({
       message: "Upload successful",
       data: uploadResponse,
     });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return Response.json({ error: "Upload failed" }, { status: 500 });
   }
 }

@@ -1,20 +1,21 @@
-import mongoose, { Schema, type Document } from "mongoose"
-import slugify from "slugify"
+// lib/models/blog-post.ts
+import mongoose, { Schema, model, models } from "mongoose";
+import slugify from "slugify";
 
-export interface IBlogPost extends Document {
-  title: string
-  slug: string
-  excerpt: string
-  content: string
-  coverImage?: string
-  author: string
-  status: "draft" | "published"
-  publishDate?: Date
-  readTime?: string
-  tags: string[]
-  views: number
-  createdAt: Date
-  updatedAt: Date
+export interface IBlogPost extends mongoose.Document {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImage?: string;
+  author: string;
+  status: "draft" | "published";
+  publishDate?: Date;
+  readTime?: string;
+  tags: string[];
+  views: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const BlogPostSchema = new Schema<IBlogPost>(
@@ -44,7 +45,6 @@ const BlogPostSchema = new Schema<IBlogPost>(
     },
     author: {
       type: String,
-      ref: "User",
       required: [true, "Please provide an author"],
     },
     status: {
@@ -67,28 +67,29 @@ const BlogPostSchema = new Schema<IBlogPost>(
       default: 0,
     },
   },
-  { timestamps: true },
-)
+  { timestamps: true }
+);
 
 // Generate slug from title before saving
 BlogPostSchema.pre("save", function (next) {
   if (this.isModified("title")) {
-    this.slug = slugify(this.title, { lower: true, strict: true })
+    this.slug = slugify(this.title, { lower: true, strict: true });
   }
 
   // Set publish date if status changes to published
   if (this.isModified("status") && this.status === "published" && !this.publishDate) {
-    this.publishDate = new Date()
+    this.publishDate = new Date();
   }
 
-  next()
-})
+  next();
+});
 
 // Create indexes for better query performance
+BlogPostSchema.index({ status: 1, publishDate: -1 });
+BlogPostSchema.index({ tags: 1 });
 
-BlogPostSchema.index({ status: 1, publishDate: -1 })
-BlogPostSchema.index({ tags: 1 })
+// This approach prevents model recompilation errors in development
+// with Next.js hot reloading
+const BlogPost = models.BlogPost || model<IBlogPost>("BlogPost", BlogPostSchema);
 
-
-export default mongoose.models.BlogPost || mongoose.model<IBlogPost>("BlogPost", BlogPostSchema)
-
+export default BlogPost;
