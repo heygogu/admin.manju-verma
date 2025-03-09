@@ -1,39 +1,52 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/admin-panel"
+const MONGODB_URI = process.env.NEXT_PUBLIC_MONGODB_URI!;
 
 if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable")
+  throw new Error('Please define the MONGODB_URI environment variable inside .env');
 }
 
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
-let cached = global.mongoose
+interface MongooseCache {
+  conn: mongoose.Connection | null;
+  promise: Promise<mongoose.Connection> | null;
+}
+
+declare global {
+  var mongoose: MongooseCache;
+}
+
+let cached: MongooseCache = global.mongoose || { conn: null, promise: null };
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null }
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
-async function dbConnect() {
+async function connectToDatabase() {
   if (cached.conn) {
-    return cached.conn
+    console.log('Using existing database connection');
+    return cached.conn;
   }
 
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    }
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose
-    })
+    const opts: mongoose.ConnectOptions = {};
+    
+    console.log('Creating new database connection...');
+    cached.promise = mongoose.connect(MONGODB_URI, opts)
+      .then((mongoose) => {
+        console.log('Database connected successfully');
+        return mongoose.connection as mongoose.Connection;
+      })
+      .catch((error) => {
+        console.error('Database connection error:', error);
+        throw error; // Re-throw to allow proper error handling
+      });
+  } else {
+    console.log('Waiting for existing connection promise to resolve...');
   }
-  cached.conn = await cached.promise
-  return cached.conn
+
+  // This will block execution until the connection is established
+  cached.conn = await cached.promise;
+  return cached.conn;
 }
 
-export default dbConnect
-
+export default connectToDatabase;

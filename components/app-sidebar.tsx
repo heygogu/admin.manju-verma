@@ -7,7 +7,8 @@ import {
   Users,
   FileText,
   BarChart3,
-  MessageSquare
+  MessageSquare,
+  Mail
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -17,7 +18,8 @@ import { motion } from "framer-motion";
 // import ProjectLogo from "@/app/assets/images/project-logo.png"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-
+import Image from "next/image"
+import ProjectLogo from "@/assets/images/user-gear.png"
 import { Button } from "@/components/ui/button"
 
 import {
@@ -50,14 +52,14 @@ const data = {
 
     },
     {
-      title: "Clients",
-      icon: Users,
-      url: "/clients",
+      title: "Mails",
+      icon: Mail,
+      url: "/gmail",
     },
     {
       title: "Blog",
       icon: FileText,
-      url: "/blog",
+      url: "/blogs/page/1",
     },
     {
       title: "Analytics",
@@ -97,7 +99,7 @@ export function AppSidebar({
       <Sidebar collapsible="icon" >
         <SidebarHeader className="flex items-center justify-center mt-2">
           {/* <TeamSwitcher teams={data.teams} /> */}
-          {/* <Image src={ProjectLogo} height={100} width={200} alt="Project Logo" className="" ></Image> */}
+          <Image src={ProjectLogo} height={100} width={200} alt="Project Logo" className="" />
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={data.navMain} />

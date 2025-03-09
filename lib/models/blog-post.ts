@@ -7,7 +7,7 @@ export interface IBlogPost extends Document {
   excerpt: string
   content: string
   coverImage?: string
-  author: mongoose.Types.ObjectId
+  author: string
   status: "draft" | "published"
   publishDate?: Date
   readTime?: string
@@ -43,7 +43,7 @@ const BlogPostSchema = new Schema<IBlogPost>(
       type: String,
     },
     author: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: [true, "Please provide an author"],
     },
@@ -85,10 +85,10 @@ BlogPostSchema.pre("save", function (next) {
 })
 
 // Create indexes for better query performance
-BlogPostSchema.index({ slug: 1 })
+
 BlogPostSchema.index({ status: 1, publishDate: -1 })
 BlogPostSchema.index({ tags: 1 })
-BlogPostSchema.index({ author: 1 })
+
 
 export default mongoose.models.BlogPost || mongoose.model<IBlogPost>("BlogPost", BlogPostSchema)
 
