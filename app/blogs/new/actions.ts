@@ -28,7 +28,7 @@ export async function uploadImage({ formData }: { formData: FormData }) {
 export async function createBlog(payload: any) {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/blog/create`,
+      `/${process.env.NEXT_PUBLIC_BASE_URL}/api/blog/create`,
       payload,
       {
         withCredentials: true,

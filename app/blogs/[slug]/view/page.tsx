@@ -20,7 +20,7 @@ export default function BlogPostPage() {
   async function getBlogPostBySlug(slug: string) {
     try {
       // Use absolute URL for server-side fetching
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/${slug}`);
+      const response = await axios.get(`/${process.env.NEXT_PUBLIC_API_URL}/api/blog/${slug}`);
       console.log('response', response?.data);
       // return response?.data;
       setPost(response?.data);
