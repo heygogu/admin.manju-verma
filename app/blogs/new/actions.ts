@@ -5,7 +5,7 @@ import axios from 'axios';
 export async function uploadImage({ formData }: { formData: FormData }) {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/upload-image`,
+      `/api/upload-image`,
       formData,
       {
         withCredentials: true,
@@ -28,7 +28,7 @@ export async function uploadImage({ formData }: { formData: FormData }) {
 export async function createBlog(payload: any) {
   try {
     const response = await axios.post(
-      `/${process.env.NEXT_PUBLIC_BASE_URL}/api/blog/create`,
+      `/api/blog/create`,
       payload,
       {
         withCredentials: true,
