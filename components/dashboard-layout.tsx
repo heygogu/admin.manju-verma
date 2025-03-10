@@ -1,5 +1,7 @@
+"use client"
 import { AppSidebar } from '@/components/app-sidebar';
 import "@/app/globals.css"
+import { Pointer } from './magicui/pointer';
 // export const metadata: Metadata = {
 //   title: 'Next Shadcn Dashboard Starter',
 //   description: 'Basic dashboard with Next.js and Shadcn'

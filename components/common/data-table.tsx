@@ -20,6 +20,7 @@ import {
 import { Info } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { parseAsInteger, useQueryState } from 'nuqs';
+import { BorderBeam } from '../magicui/border-beam';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -84,7 +85,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="">
       <ScrollArea className="h-full rounded-md ">
-        <Table className="relative border">
+        <Table className="relative  border">
 
           <TableHeader className=' focus:bg-primary whitespace-nowrap'>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -132,6 +133,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             )}
           </TableBody>
+        
         </Table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

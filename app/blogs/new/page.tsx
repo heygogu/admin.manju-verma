@@ -39,6 +39,7 @@ import {
   Loader,
   SendIcon,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { BlogEditor } from "@/components/blog-editor";
 import { Label } from "@/components/ui/label";
@@ -73,6 +74,7 @@ import { useUploadFile } from "@/hooks/use-upload-file";
 import { createBlog, uploadImage } from "./actions";
 import { start } from "repl";
 import { useRouter } from "next/navigation";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -719,9 +721,19 @@ function BlogPage() {
               onClick={() => {
                 setAiVisible(!aiVisible);
               }}
-              className=" "
+              className="relative overflow-hidden "
             >
               <Bot className=" h-4 w-4" /> {aiVisible ? "Disable" : "Use"} AI
+              <BorderBeam
+                size={40}
+                initialOffset={20}
+                className="from-transparent via-blue-500  to-transparent"
+                transition={{
+                  type: "spring",
+                  stiffness: 60,
+                  damping: 20,
+                }}
+              />
             </Button>
 
             {aiVisible && (

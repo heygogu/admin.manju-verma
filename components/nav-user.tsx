@@ -23,6 +23,7 @@ import { LogoutAction } from "./logoutaction";
 import { toast } from "sonner";
 import { useRouter } from "nextjs-toploader/app";
 import { destroyCookie } from "nookies";
+import { BorderBeam } from "./magicui/border-beam";
 export function NavUser({
   user,
 }: {
@@ -59,10 +60,10 @@ export function NavUser({
       ) : null}
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="relative overflow-hidden data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-full">
                 <AvatarImage
@@ -79,6 +80,18 @@ export function NavUser({
                 <span className="truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
+
+              <BorderBeam
+        duration={6}
+        size={400}
+        className="from-transparent via-red-500 to-transparent"
+      />
+      <BorderBeam
+        duration={6}
+        delay={3}
+        size={400}
+        className="from-transparent via-blue-500 to-transparent"
+      />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

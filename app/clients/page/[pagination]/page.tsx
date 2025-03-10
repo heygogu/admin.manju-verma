@@ -22,33 +22,12 @@ import {
   User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import dayjs from "dayjs";
 import PageContainer from "@/components/page-container";
 import DashboardLayout from "@/components/dashboard-layout";
 import { DataTable } from "@/components/common/data-table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import PaginationCompo from "@/components/common/pagination";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -275,6 +254,7 @@ function BlogPage() {
             </p>
           </div>
         </div>
+        
 
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1 ">

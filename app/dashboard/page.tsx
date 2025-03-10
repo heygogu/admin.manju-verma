@@ -26,6 +26,7 @@ import {
 
 import { Skeleton } from "@/components/ui/skeleton";
 import DashboardLayout from "@/components/dashboard-layout";
+import { NumberTicker } from "@/components/magicui/number-ticker";
 
 const DashboardCardSkeleton = () => {
   return (
@@ -93,7 +94,9 @@ function DashboardPage() {
       <div className="space-y-8 grid grid-cols-1">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Dashboard
+              </h1>
             <p className="text-muted-foreground">
               Overview of your admin activities and client interactions.
             </p>
@@ -150,7 +153,12 @@ function DashboardPage() {
                         )}
                       </CardHeader>
                       <CardContent className="">
-                        <div className="text-3xl font-bold ">{stat?.value}</div>
+                        {/* <div className="text-3xl font-bold ">{stat?.value}</div> */}
+                        <NumberTicker
+                          delay={0}
+                          value={stat?.value}
+                          className="whitespace-pre-wrap text-3xl font-medium tracking-tighter text-black dark:text-white"
+                        />
                         <div className="text-xs text-gray-500 mt-1">
                           {type === "today"
                             ? "Today"

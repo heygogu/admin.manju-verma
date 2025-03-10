@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AIProvider from "@/AIProviders/providers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import NextTopLoader from "nextjs-toploader";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({
         >
           <NextTopLoader color="blue" height={1.5} zIndex={1600} />
           <NuqsAdapter>
+           
             <AIProvider>{children}</AIProvider>
           </NuqsAdapter>
           <Toaster position="top-right" />

@@ -21,13 +21,7 @@ import {
   User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -61,6 +55,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 interface BlogPost {
   author: string;
@@ -236,18 +231,12 @@ function BlogPage() {
           {row.original?.tags
             ?.slice(0, 5)
             ?.map((tag: string, index: number) => (
-              <Badge
-                key={index}
-                variant="default"
-                className="bg-gray-100 capitalize text-gray-800"
-              >
+              <Badge key={index} variant="default">
                 {tag}
               </Badge>
             ))}
           {row.original?.tags?.length > 5 && (
-            <Badge variant="default" className="bg-gray-100 text-gray-800">
-              +{row.original?.tags?.length - 5}
-            </Badge>
+            <Badge variant="default">+{row.original?.tags?.length - 5}</Badge>
           )}
         </div>
       ),
@@ -294,14 +283,13 @@ function BlogPage() {
             </Button>
           </Link>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="z-[100]">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               {/* <DropdownMenuItem className="cursor-pointer">
                       <Pencil className="mr-2 h-4 w-4" />
@@ -310,10 +298,10 @@ function BlogPage() {
                     <DropdownMenuSeparator /> */}
               <DropdownMenuItem
                 onClick={handleDeleteBlog(row.original?._id)}
-                className="text-destructive cursor-pointer"
+                className="text-red-500 cursor-pointer"
               >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                <Trash2 className="mr-2 h-4 text-red-500 w-4" />
+                <span className="text-red-500">Delete</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -338,17 +326,29 @@ function BlogPage() {
               Create, edit, and manage your blog posts.
             </p>
           </div>
-          <Button asChild>
-            <Link href="/blogs/new">
-              <Plus className="mr-2 h-4 w-4" />
-              New Post
+
+          
+          <Button variant="outline" className="relative overflow-hidden">
+            <Link className="flex gap-2 items-center" href="/blogs/new">
+              <Plus className=" h-4 w-4" />
+              New Blog
             </Link>
+            <BorderBeam
+              size={40}
+              initialOffset={20}
+              className="from-transparent via-yellow-500  to-transparent"
+              transition={{
+                type: "spring",
+                stiffness: 60,
+                damping: 20,
+              }}
+            />
           </Button>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1 ">
-            <Search className="absolute left-2 top-3 h-4 w-4  text-gray-500" />
+            <Search className="absolute left-2 top-2 mt-[2px] h-4 w-4  text-gray-500" />
             <Input
               placeholder="Search by blog title or description..."
               className="pl-9"
@@ -375,8 +375,25 @@ function BlogPage() {
                       <SelectItem value="developer">Developer</SelectItem>
                     </SelectContent>
                   </Select> */}
-            <Button variant="outline" size="icon">
+            <Button className="relative overflow-hidden" variant="outline" size="icon">
               <Filter className="h-4 w-4" />
+              {/* <BorderBeam
+        duration={6}
+        size={400}
+        className="from-transparent via-red-500 to-transparent"
+      />
+     */}
+      <BorderBeam
+              size={20}
+              initialOffset={20}
+              reverse
+              className="from-transparent via-blue-500  to-transparent"
+              transition={{
+                type: "spring",
+                stiffness: 60,
+                damping: 20,
+              }}
+            />
             </Button>
           </div>
         </div>
