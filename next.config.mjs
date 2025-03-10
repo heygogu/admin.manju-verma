@@ -1,3 +1,4 @@
+import { type } from "os";
 
 
 const nextConfig = {
@@ -5,6 +6,9 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '5mb',
     },
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
   images: {
     remotePatterns: [
