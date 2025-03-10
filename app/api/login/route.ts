@@ -8,12 +8,18 @@ const passcode = process.env.NEXT_PUBLIC_PASSWORD!;
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
   console.log(email, password);
-  
+  if (!username || !passcode) {
+    return NextResponse.json({ error: "Invalid Credentials" }, { status: 401 });
+  }
+
   try {
     await connectToDatabase(); // Connect to MongoDB
-    
+
     if (email !== username || password !== passcode) {
-      return NextResponse.json({ error: "Invalid Credentials" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid Credentials" },
+        { status: 401 }
+      );
     }
 
     const token = jwt.sign({ email }, process.env.NEXT_PUBLIC_JWT_SECRET!, {
@@ -29,7 +35,7 @@ export async function POST(req: NextRequest) {
     // Set the cookie on the response
     response.cookies.set("token", token, {
       httpOnly: true,
-      
+
       sameSite: "lax", // Changed from "none" to "lax" for better compatibility
       path: "/",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds

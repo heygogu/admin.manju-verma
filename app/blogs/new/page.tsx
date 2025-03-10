@@ -89,7 +89,7 @@ function BlogPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [blogContent, setBlogContent] = useState("");
-  const router=useRouter()
+  const router = useRouter();
 
   const transcriptionTimeout = useRef<NodeJS.Timeout | null>(null);
   const dataListenerRef = useRef<((e: BlobEvent) => void) | null>(null);
@@ -97,9 +97,7 @@ function BlogPage() {
     ((data: LiveTranscriptionEvent) => void) | null
   >(null);
 
-  const OPTIONS: Option[] = [
-  
-  ];
+  const OPTIONS: Option[] = [];
 
   const {
     connection,
@@ -358,6 +356,10 @@ function BlogPage() {
 
   const onSubmit = async (data: any) => {
     console.log(data);
+    if (imageUploadPending) {
+      toast.error("Please wait while we upload the cover image");
+      return;
+    }
     if (!data.coverImage) {
       toast.error("Please upload a cover image");
       return;
@@ -385,7 +387,7 @@ function BlogPage() {
           toast.success("Blog created successfully!");
         } else {
           toast.error("Could not create blog", {
-            description: result.error || "Error sending email.",
+            description: result?.error,
           });
         }
       });
@@ -756,7 +758,9 @@ function BlogPage() {
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title">Title<span className="text-red-400">*</span></Label>
+                    <Label htmlFor="title">
+                      Title<span className="text-red-400">*</span>
+                    </Label>
                     <Controller
                       name="title"
                       control={control}
@@ -770,7 +774,9 @@ function BlogPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="excerpt">Description<span className="text-red-400">*</span></Label>
+                    <Label htmlFor="excerpt">
+                      Description<span className="text-red-400">*</span>
+                    </Label>
                     <Controller
                       name="excerpt"
                       control={control}
@@ -804,7 +810,9 @@ function BlogPage() {
                       )} */}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="coverImage">Cover Image<span className="text-red-400">*</span></Label>
+                    <Label htmlFor="coverImage">
+                      Cover Image<span className="text-red-400">*</span>
+                    </Label>
                     <Controller
                       name="coverImage"
                       control={control}
@@ -855,14 +863,18 @@ function BlogPage() {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label className="" htmlFor="content">Content<span className="text-red-400">*</span></Label>
+                    <Label className="" htmlFor="content">
+                      Content<span className="text-red-400">*</span>
+                    </Label>
                     <BlogEditor
                       onChange={(content) => {
                         setBlogContent((prev) => content);
                       }}
                     />
                   </div>
-                  <Button type="submit" className="flex ml-auto">Submit</Button>
+                  <Button type="submit" className="flex ml-auto">
+                    Submit
+                  </Button>
                 </form>
               </CardContent>
             </Card>

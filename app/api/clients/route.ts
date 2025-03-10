@@ -1,38 +1,30 @@
-
 import Contact from "@/lib/models/contacts"; // Import your Mongoose Blog model
 import connectToDatabase from "@/lib/db";
 
 export async function GET(req: Request) {
+  await connectToDatabase();
+  try {
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get("page")) || 1;
     const limit = Number(searchParams.get("limit")) || 10;
     const search = searchParams.get("search") || "";
-  try {
-    await connectToDatabase(); 
 
-    // Get query params
-
-    // Calculate pagination offset
     const skip = (page - 1) * limit;
-
-    // Search query
     const searchQuery = search
       ? {
           $or: [
-            { name: { $regex: search, $options: "i" } }, 
+            { name: { $regex: search, $options: "i" } },
             { message: { $regex: search, $options: "i" } },
           ],
         }
       : {};
 
-    // Fetch blogs with pagination
     const users = await Contact.find(searchQuery)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .lean(); // Optimize MongoDB query
+      .lean();
 
-    // Count total blogs matching the search
     const totalUsers = await Contact.countDocuments(searchQuery);
 
     return Response.json({

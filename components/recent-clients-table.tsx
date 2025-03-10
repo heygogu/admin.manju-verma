@@ -10,8 +10,7 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "./common/data-table";
-import { Tooltip, TooltipTrigger,TooltipContent } from "./ui/tooltip";
-
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 
 interface RecentClientsTableProps {
   isLoading?: boolean;
@@ -21,9 +20,6 @@ export function RecentClientsTable({
   isLoading = false,
   recentClients,
 }: RecentClientsTableProps) {
-  if (!recentClients) {
-    return null;
-  }
   const clientColumns: ColumnDef<any>[] = [
     {
       id: "index",
@@ -70,10 +66,7 @@ export function RecentClientsTable({
                   <span>{row.original?.message?.slice(0, 20) + "..."}</span>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                <div className="w-56">
-                    {row.original?.message}
-                </div>
-                
+                  <div className="w-56">{row.original?.message}</div>
                 </TooltipContent>
               </Tooltip>
               {/* {row.original?.message?.slice(0, 20) + "..."} */}

@@ -28,7 +28,7 @@ const BlogPostSchema = new Schema<IBlogPost>(
     },
     slug: {
       type: String,
-      unique: true,
+      unique: [true, "Slug must be unique"],
     },
     excerpt: {
       type: String,
@@ -77,7 +77,11 @@ BlogPostSchema.pre("save", function (next) {
   }
 
   // Set publish date if status changes to published
-  if (this.isModified("status") && this.status === "published" && !this.publishDate) {
+  if (
+    this.isModified("status") &&
+    this.status === "published" &&
+    !this.publishDate
+  ) {
     this.publishDate = new Date();
   }
 
@@ -90,6 +94,7 @@ BlogPostSchema.index({ tags: 1 });
 
 // This approach prevents model recompilation errors in development
 // with Next.js hot reloading
-const BlogPost = models.BlogPost || model<IBlogPost>("BlogPost", BlogPostSchema);
+const BlogPost =
+  models.BlogPost || model<IBlogPost>("BlogPost", BlogPostSchema);
 
 export default BlogPost;
