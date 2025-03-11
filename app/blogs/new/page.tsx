@@ -883,20 +883,22 @@ function BlogPage() {
                       }}
                     />
                   </div>
-                  <ConfettiButton
-                    type="submit"
-                    disabled={formPending}
-                    className="flex ml-auto"
-                  >
-                    {formPending ? (
-                      <span>
-                        <Loader className="mr-1 animate-spin" />
-                      </span>
-                    ) : (
-                      ""
-                    )}
-                    Submit
-                  </ConfettiButton>
+                  {blogContent && coverImageUrl ? (
+                    <ConfettiButton
+                      type="submit"
+                      disabled={formPending}
+                      className="flex ml-auto"
+                    >
+                      {formPending ? (
+                        <span>
+                          <Loader className="mr-1 animate-spin" />
+                        </span>
+                      ) : (
+                        ""
+                      )}
+                      Submit
+                    </ConfettiButton>
+                  ) : null}
                 </form>
               </CardContent>
             </Card>
