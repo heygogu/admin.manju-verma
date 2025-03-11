@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import DashboardLayout from "@/components/dashboard-layout";
 import axios from "axios";
+import { ConfettiButton } from "@/components/magicui/confetti";
 import {
   AlignLeft,
   Bot,
@@ -143,8 +144,6 @@ function BlogPage() {
   const [formPending, startFormTransition] = useTransition();
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [blogTags, setBlogTags] = useState<string[]>([]);
-  console.log(blogTags, "blogTags");
-  console.log(coverImageUrl, "coverImageUrl");
 
   //title, excerpt, content, coverImage, author, status, tags
 
@@ -679,14 +678,14 @@ function BlogPage() {
 
   return (
     <PageContainer>
-      {formPending ? (
+      {/* {formPending ? (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-lg ">
           <Loader className="h-6 w-6 text-primary animate-spin" />
           <p className="mt-4 text-primary text-lg">
             {"Please wait while we create the blog for you..."}
           </p>
         </div>
-      ) : null}
+      ) : null} */}
       <div className="space-y-8">
         <div className="flex justify-between items-center">
           <div>
@@ -884,9 +883,20 @@ function BlogPage() {
                       }}
                     />
                   </div>
-                  <Button type="submit" className="flex ml-auto">
+                  <ConfettiButton
+                    type="submit"
+                    disabled={formPending}
+                    className="flex ml-auto"
+                  >
+                    {formPending ? (
+                      <span>
+                        <Loader className="mr-1 animate-spin" />
+                      </span>
+                    ) : (
+                      ""
+                    )}
                     Submit
-                  </Button>
+                  </ConfettiButton>
                 </form>
               </CardContent>
             </Card>
