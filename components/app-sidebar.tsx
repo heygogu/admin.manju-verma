@@ -9,7 +9,8 @@ import {
   BarChart3,
   MessageSquare,
   Mail,
-  Users2
+  Users2,
+  Code2
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -54,25 +55,25 @@ const data = {
     },
    
     {
+      title: "Clients",
+      icon: Users2,
+      url: "/clients/page/1",
+    },
+    {
       title: "Blogs",
       icon: FileText,
       url: "/blogs/page/1",
     },
     {
-      title: "Clients",
-      icon: Users2,
-      url: "/clients/page/1",
+      title: "Emails",
+      icon: Mail,
+      url: "/mails/page/1",
     },
-    // {
-    //   title: "AI Chat",
-    //   icon: MessageSquare,
-    //   url: "/chat",
-    // },
-    // {
-    //   title: "Settings",
-    //   icon: Settings,
-    //   url: "/settings",
-    // },
+    {
+      title: "Websites",
+      icon: Code2,
+      url: "/webistes/page/1",
+    },
     
 
   ],
