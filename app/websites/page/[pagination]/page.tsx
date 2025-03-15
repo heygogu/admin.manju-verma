@@ -275,7 +275,7 @@ const websiteColumns: ColumnDef<Website>[] = [
         header: "Actions",
         cell: ({ row }: { row: any }) => (
             <div className="flex gap-2">
-                <Link href={`/websites/${row.original._id}/view`} passHref>
+                <Link href={`/websites/${row.original._id}`} passHref>
                     <Button variant="ghost" size="icon">
                         <Eye className="h-4 w-4" />
                     </Button>
