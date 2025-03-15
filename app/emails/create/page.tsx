@@ -1,44 +1,60 @@
-"use client"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Controller, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Input } from "@/components/ui/input"
-import PageContainer from "@/components/page-container"
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import DashboardLayout from "@/components/dashboard-layout"
-import { ConfettiButton } from "@/components/magicui/confetti"
-import { Bot, Loader, Mail } from "lucide-react"
+"use client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import PageContainer from "@/components/page-container";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import DashboardLayout from "@/components/dashboard-layout";
+import { ConfettiButton } from "@/components/magicui/confetti";
+import { Bot, Loader, Mail } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { useRef, useState, useTransition } from "react"
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useRef, useState, useTransition } from "react";
 
-import { toast } from "sonner"
+import { toast } from "sonner";
 
-import { useAutosizeTextArea } from "@/components/AutoSizeTextArea"
-import MultipleSelector from "@/components/MultiSelector"
-import { FileUploader } from "@/components/file-uploader"
-import { useUploadFile } from "@/hooks/use-upload-file"
-import { useRouter } from "next/navigation"
-import { BorderBeam } from "@/components/magicui/border-beam"
-import AIChat from "@/components/common/AIChat"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
-import { BlogEditor } from "@/components/blog-editor"
+import { useAutosizeTextArea } from "@/components/AutoSizeTextArea";
+import MultipleSelector from "@/components/MultiSelector";
+import { FileUploader } from "@/components/file-uploader";
+import { useUploadFile } from "@/hooks/use-upload-file";
+import { useRouter } from "next/navigation";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import AIChat from "@/components/common/AIChat";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { BlogEditor } from "@/components/blog-editor";
+import { createEmail } from "./actions";
+import { uploadImage } from "@/app/blogs/new/actions";
 
 // Schema based on the Mongoose model
 const schema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Title cannot be more than 100 characters"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(100, "Title cannot be more than 100 characters"),
   clientName: z.string().min(1, "Client name is required"),
   thumbnailImage: z.instanceof(File).optional(),
-  description: z.string().min(1, "Description is required").max(500, "Description cannot be more than 500 characters"),
-  emailType: z.enum(["Newsletter", "Marketing", "Transactional", "Promotional", "Other"], {
-    required_error: "Please select an email type",
-  }),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(500, "Description cannot be more than 500 characters"),
+  emailType: z.enum(
+    ["Newsletter", "Marketing", "Transactional", "Promotional", "Other"],
+    {
+      required_error: "Please select an email type",
+    }
+  ),
   industry: z.string().min(1, "Industry is required"),
-  emailContent: z.string().min(1, "Email content is required"),
   subject: z.string().min(1, "Email subject is required"),
   results: z.object({
     openRate: z.number().min(0).max(100).optional(),
@@ -48,30 +64,11 @@ const schema = z.object({
   }),
   completionDate: z.date().optional(),
   featured: z.boolean().default(false),
-})
+});
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>;
 
-// Mock function for creating email - replace with actual implementation
-const createEmail = async (data: any) => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return { success: true }
-}
 
-// Mock function for uploading image - replace with actual implementation
-const uploadImage = async ({ formData }: { formData: FormData }) => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return {
-    success: true,
-    data: {
-      data: {
-        secure_url: `/placeholder.svg?height=400&width=800`,
-      },
-    },
-  }
-}
 
 const INDUSTRY_OPTIONS = [
   { value: "technology", label: "Technology" },
@@ -84,7 +81,7 @@ const INDUSTRY_OPTIONS = [
   { value: "manufacturing", label: "Manufacturing" },
   { value: "nonprofit", label: "Non-profit" },
   { value: "realestate", label: "Real Estate" },
-]
+];
 
 const TAG_OPTIONS = [
   { value: "responsive", label: "Responsive" },
@@ -101,30 +98,35 @@ const TAG_OPTIONS = [
   { value: "promotional", label: "Promotional" },
   { value: "announcement", label: "Announcement" },
   { value: "welcome", label: "Welcome" },
-]
+];
 
 function EmailFormPage() {
-  const [text, setText] = useState("")
-  const router = useRouter()
-  const [aiVisible, setAiVisible] = useState(false)
-  const [emailTags, setEmailTags] = useState<string[]>([])
-  const [emailContent, setEmailContent] = useState("")
+  const [text, setText] = useState("");
+  const router = useRouter();
+  const [aiVisible, setAiVisible] = useState(false);
+  const [emailTags, setEmailTags] = useState<string[]>([]);
+  const [emailContent, setEmailContent] = useState("");
 
-  const { onUpload, progresses, uploadedFiles, isUploading } = useUploadFile("imageUploader", {
-    defaultUploadedFiles: [],
-  })
+  const { onUpload, progresses, uploadedFiles, isUploading } = useUploadFile(
+    "imageUploader",
+    {
+      defaultUploadedFiles: [],
+    }
+  );
 
-  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useAutosizeTextArea({
     textAreaRef,
     triggerAutoSize: text,
     minHeight: 130,
     maxHeight: 100,
-  })
+  });
 
-  const [imageUploadPending, startImageTransition] = useTransition()
-  const [formPending, startFormTransition] = useTransition()
-  const [thumbnailImageUrl, setThumbnailImageUrl] = useState<string | null>(null)
+  const [imageUploadPending, startImageTransition] = useTransition();
+  const [formPending, startFormTransition] = useTransition();
+  const [thumbnailImageUrl, setThumbnailImageUrl] = useState<string | null>(
+    null
+  );
 
   const {
     control,
@@ -140,7 +142,6 @@ function EmailFormPage() {
       description: "",
       emailType: "Newsletter",
       industry: "",
-      emailContent: "",
       subject: "",
       results: {
         openRate: 0,
@@ -151,17 +152,22 @@ function EmailFormPage() {
       completionDate: new Date(),
       featured: false,
     },
-  })
+  });
 
   const onSubmit = async (data: FormValues) => {
     if (imageUploadPending) {
-      toast.error("Please wait while we upload the thumbnail image")
-      return
+      toast.error("Please wait while we upload the thumbnail image");
+      return;
     }
 
     if (!data.thumbnailImage) {
-      toast.error("Please upload a thumbnail image")
-      return
+      toast.error("Please upload a thumbnail image");
+      return;
+    }
+
+    if(!emailContent){
+      toast.error("Please provide email content");
+      return;
     }
 
     try {
@@ -172,62 +178,64 @@ function EmailFormPage() {
         description: data.description,
         emailType: data.emailType,
         industry: data.industry,
-        emailContent: emailContent || data.emailContent,
+        emailContent: emailContent || "",
         subject: data.subject,
         results: data.results,
         tags: emailTags,
         completionDate: data.completionDate,
         featured: data.featured,
-      }
+      };
 
       startFormTransition(async () => {
-        const result = await createEmail(payload)
+        const result = await createEmail(payload);
         if (result.success) {
-          router.replace("/emails")
-          toast.success("Email created successfully!")
+          router.replace("/emails/page/1");
+          toast.success("Email created successfully!");
         } else {
-          toast.error("Could not create email")
+          toast.error("Could not create email");
         }
-      })
+      });
     } catch (error) {
-      console.error("Error creating email:", error)
+      console.error("Error creating email:", error);
       toast.error("Could not create email", {
         description: error instanceof Error ? error.message : "Unknown error",
-      })
+      });
     }
-  }
+  };
 
-//   const handleImageUpload = async (file: File) => {
-//     if (!file) return null
+  //   const handleImageUpload = async (file: File) => {
+  //     if (!file) return null
 
-//     try {
-//       const formData = new FormData()
-//       formData.append("image", file)
+  //     try {
+  //       const formData = new FormData()
+  //       formData.append("image", file)
 
-//       startImageTransition(async () => {
-//         const result = await uploadImage({ formData })
-//         if (result.success) {
-//           const imageUrl = result.data?.data?.secure_url
-//           setThumbnailImageUrl(imageUrl)
-//           toast.success("Thumbnail image uploaded successfully!")
-//           return imageUrl
-//         } else {
-//           toast.error("Could not upload image")
-//           return null
-//         }
-//       })
-//     } catch (error) {
-//       console.error("Error uploading image:", error)
-//       return null
-//     }
-//   }
+  //       startImageTransition(async () => {
+  //         const result = await uploadImage({ formData })
+  //         if (result.success) {
+  //           const imageUrl = result.data?.data?.secure_url
+  //           setThumbnailImageUrl(imageUrl)
+  //           toast.success("Thumbnail image uploaded successfully!")
+  //           return imageUrl
+  //         } else {
+  //           toast.error("Could not upload image")
+  //           return null
+  //         }
+  //       })
+  //     } catch (error) {
+  //       console.error("Error uploading image:", error)
+  //       return null
+  //     }
+  //   }
 
   return (
     <PageContainer>
       {formPending && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-lg">
           <Loader className="h-6 w-6 text-primary animate-spin" />
-          <p className="mt-4 text-primary text-lg">{"Please wait while we create the email for you..."}</p>
+          <p className="mt-4 text-primary text-lg">
+            {"Please wait while we create the email for you..."}
+          </p>
         </div>
       )}
 
@@ -238,18 +246,21 @@ function EmailFormPage() {
               <Mail className="h-7 w-7 text-primary" />
               <CardTitle className="text-2xl">Create Email</CardTitle>
             </div>
-            <p className="text-muted-foreground">Add a new email to your portfolio.</p>
+            <p className="text-muted-foreground">
+              Add a new email to your portfolio.
+            </p>
           </div>
 
           <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={() => {
-                setAiVisible(!aiVisible)
+                setAiVisible(!aiVisible);
               }}
               className="relative overflow-hidden"
             >
-              <Bot className="h-4 w-4 mr-2" /> {aiVisible ? "Disable" : "Use"} AI
+              <Bot className="h-4 w-4 mr-2" /> {aiVisible ? "Disable" : "Use"}{" "}
+              AI
               <BorderBeam
                 size={40}
                 initialOffset={20}
@@ -263,7 +274,10 @@ function EmailFormPage() {
             </Button>
 
             {aiVisible && (
-              <Select defaultValue="gemini" onValueChange={(value) => console.log(value)}>
+              <Select
+                defaultValue="gemini"
+                onValueChange={(value) => console.log(value)}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select AI Model" />
                 </SelectTrigger>
@@ -277,7 +291,11 @@ function EmailFormPage() {
 
         <div className="grid grid-cols-12 gap-3">
           {/* Email Form */}
-          <div className={`${aiVisible ? "col-span-12 lg:col-span-7" : "col-span-12"}`}>
+          <div
+            className={`${
+              aiVisible ? "col-span-12 lg:col-span-7" : "col-span-12"
+            }`}
+          >
             <Card>
               <CardContent className="pt-6">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -289,16 +307,32 @@ function EmailFormPage() {
                       <Label htmlFor="title">
                         Title<span className="text-red-400">*</span>
                       </Label>
-                      <Controller name="title" control={control} render={({ field }) => <Input {...field} />} />
-                      {errors?.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+                      <Controller
+                        name="title"
+                        control={control}
+                        render={({ field }) => <Input {...field} />}
+                      />
+                      {errors?.title && (
+                        <p className="text-red-500 text-sm">
+                          {errors.title.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="clientName">
                         Client Name<span className="text-red-400">*</span>
                       </Label>
-                      <Controller name="clientName" control={control} render={({ field }) => <Input {...field} />} />
-                      {errors?.clientName && <p className="text-red-500 text-sm">{errors.clientName.message}</p>}
+                      <Controller
+                        name="clientName"
+                        control={control}
+                        render={({ field }) => <Input {...field} />}
+                      />
+                      {errors?.clientName && (
+                        <p className="text-red-500 text-sm">
+                          {errors.clientName.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -312,9 +346,39 @@ function EmailFormPage() {
                           <FileUploader
                             value={field.value ? [field.value] : []}
                             onValueChange={async (files) => {
-                              field.onChange(files[0])
-                              if (files[0]) {
-                                // await handleImageUpload(files[0])
+                              field.onChange(files[0]);
+                              if (!files[0]) return;
+                              try {
+                                const formData = new FormData();
+                                formData.append("image", files[0]);
+                                
+                                  const result = await uploadImage({
+                                    formData,
+                                  });
+                                  if (result.success) {
+                                    toast.success(
+                                      "Thumbnail Image Uploaded successfully!"
+                                    );
+                                    // console.log(result.data?.data?.secure_url,"from cloudinary")
+
+                                    setThumbnailImageUrl(
+                                      result.data?.data?.secure_url
+                                    );
+                                    return result.data?.data?.secure_url;
+                                  } else {
+                                    toast.error(
+                                      "Could not upload thumbnail image",
+                                      {
+                                        description:
+                                         
+                                          "Error uploading image.",
+                                      }
+                                    );
+                                  }
+                                
+                              } catch (error) {
+                                console.error("Error uploading image:", error);
+                                return null;
                               }
                             }}
                             maxFileCount={1}
@@ -325,7 +389,9 @@ function EmailFormPage() {
                         )}
                       />
                       {errors?.thumbnailImage && (
-                        <p className="text-red-500 text-sm">{errors.thumbnailImage.message}</p>
+                        <p className="text-red-500 text-sm">
+                          {errors.thumbnailImage.message}
+                        </p>
                       )}
                     </div>
 
@@ -337,10 +403,18 @@ function EmailFormPage() {
                         name="description"
                         control={control}
                         render={({ field }) => (
-                          <Textarea {...field} placeholder="Describe the email campaign" className="min-h-[100px]" />
+                          <Textarea
+                            {...field}
+                            placeholder="Describe the email campaign"
+                            className="min-h-[100px]"
+                          />
                         )}
                       />
-                      {errors?.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+                      {errors?.description && (
+                        <p className="text-red-500 text-sm">
+                          {errors.description.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -352,21 +426,36 @@ function EmailFormPage() {
                           name="emailType"
                           control={control}
                           render={({ field }) => (
-                            <Select value={field.value} onValueChange={field.onChange}>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
                               <SelectTrigger>
                                 <SelectValue placeholder="Select email type" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="Newsletter">Newsletter</SelectItem>
-                                <SelectItem value="Marketing">Marketing</SelectItem>
-                                <SelectItem value="Transactional">Transactional</SelectItem>
-                                <SelectItem value="Promotional">Promotional</SelectItem>
+                                <SelectItem value="Newsletter">
+                                  Newsletter
+                                </SelectItem>
+                                <SelectItem value="Marketing">
+                                  Marketing
+                                </SelectItem>
+                                <SelectItem value="Transactional">
+                                  Transactional
+                                </SelectItem>
+                                <SelectItem value="Promotional">
+                                  Promotional
+                                </SelectItem>
                                 <SelectItem value="Other">Other</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
                         />
-                        {errors?.emailType && <p className="text-red-500 text-sm">{errors.emailType.message}</p>}
+                        {errors?.emailType && (
+                          <p className="text-red-500 text-sm">
+                            {errors.emailType.message}
+                          </p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
@@ -377,13 +466,19 @@ function EmailFormPage() {
                           name="industry"
                           control={control}
                           render={({ field }) => (
-                            <Select value={field.value} onValueChange={field.onChange}>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
                               <SelectTrigger>
                                 <SelectValue placeholder="Select industry" />
                               </SelectTrigger>
                               <SelectContent>
                                 {INDUSTRY_OPTIONS.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
                                     {option.label}
                                   </SelectItem>
                                 ))}
@@ -391,7 +486,11 @@ function EmailFormPage() {
                             </Select>
                           )}
                         />
-                        {errors?.industry && <p className="text-red-500 text-sm">{errors.industry.message}</p>}
+                        {errors?.industry && (
+                          <p className="text-red-500 text-sm">
+                            {errors.industry.message}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -399,15 +498,23 @@ function EmailFormPage() {
                       <Label htmlFor="subject">
                         Email Subject<span className="text-red-400">*</span>
                       </Label>
-                      <Controller name="subject" control={control} render={({ field }) => <Input {...field} />} />
-                      {errors?.subject && <p className="text-red-500 text-sm">{errors.subject.message}</p>}
+                      <Controller
+                        name="subject"
+                        control={control}
+                        render={({ field }) => <Input {...field} />}
+                      />
+                      {errors?.subject && (
+                        <p className="text-red-500 text-sm">
+                          {errors.subject.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="tags">Tags</Label>
                       <MultipleSelector
                         onChange={(value: any) => {
-                          setEmailTags(value.map((item: any) => item.value))
+                          setEmailTags(value.map((item: any) => item.value));
                         }}
                         defaultOptions={TAG_OPTIONS}
                         placeholder="Select/Make Tags..."
@@ -429,8 +536,16 @@ function EmailFormPage() {
                           render={({ field }) => (
                             <Input
                               type="date"
-                              value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
-                              onChange={(e) => field.onChange(new Date(e.target.value))}
+                              value={
+                                field.value
+                                  ? new Date(field.value)
+                                      .toISOString()
+                                      .split("T")[0]
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                field.onChange(new Date(e.target.value))
+                              }
                             />
                           )}
                         />
@@ -442,9 +557,16 @@ function EmailFormPage() {
                           <Controller
                             name="featured"
                             control={control}
-                            render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
+                            render={({ field }) => (
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            )}
                           />
-                          <span className="text-sm text-muted-foreground">Display this email prominently</span>
+                          <span className="text-sm text-muted-foreground">
+                            Display this email prominently
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -461,10 +583,10 @@ function EmailFormPage() {
                       </Label>
                       <BlogEditor
                         onChange={(content) => {
-                          setEmailContent(content)
+                          setEmailContent(content);
                         }}
                       />
-                      {errors?.emailContent && <p className="text-red-500 text-sm">{errors.emailContent.message}</p>}
+                     
                     </div>
                   </div>
 
@@ -487,14 +609,20 @@ function EmailFormPage() {
                               max="100"
                               step="0.01"
                               {...field}
-                              onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                              onChange={(e) =>
+                                field.onChange(
+                                  Number.parseFloat(e.target.value) || 0
+                                )
+                              }
                             />
                           )}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="results.clickRate">Click Rate (%)</Label>
+                        <Label htmlFor="results.clickRate">
+                          Click Rate (%)
+                        </Label>
                         <Controller
                           name="results.clickRate"
                           control={control}
@@ -505,14 +633,20 @@ function EmailFormPage() {
                               max="100"
                               step="0.01"
                               {...field}
-                              onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                              onChange={(e) =>
+                                field.onChange(
+                                  Number.parseFloat(e.target.value) || 0
+                                )
+                              }
                             />
                           )}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="results.conversionRate">Conversion Rate (%)</Label>
+                        <Label htmlFor="results.conversionRate">
+                          Conversion Rate (%)
+                        </Label>
                         <Controller
                           name="results.conversionRate"
                           control={control}
@@ -523,7 +657,11 @@ function EmailFormPage() {
                               max="100"
                               step="0.01"
                               {...field}
-                              onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                              onChange={(e) =>
+                                field.onChange(
+                                  Number.parseFloat(e.target.value) || 0
+                                )
+                              }
                             />
                           )}
                         />
@@ -547,11 +685,17 @@ function EmailFormPage() {
                   </div>
 
                   <div className="pt-4">
-                    <ConfettiButton type="submit" disabled={formPending || imageUploadPending} className="flex ml-auto">
+                    <ConfettiButton
+                      type="submit"
+                      disabled={formPending || imageUploadPending}
+                      className="flex ml-auto"
+                    >
                       {formPending || imageUploadPending ? (
                         <span className="flex items-center">
                           <Loader className="mr-2 h-4 w-4 animate-spin" />
-                          {imageUploadPending ? "Uploading Image..." : "Creating Email..."}
+                          {imageUploadPending
+                            ? "Uploading Image..."
+                            : "Creating Email..."}
                         </span>
                       ) : (
                         "Create Email"
@@ -568,7 +712,7 @@ function EmailFormPage() {
         </div>
       </div>
     </PageContainer>
-  )
+  );
 }
 
 export default function EmailForm() {
@@ -576,6 +720,5 @@ export default function EmailForm() {
     <DashboardLayout>
       <EmailFormPage />
     </DashboardLayout>
-  )
+  );
 }
-

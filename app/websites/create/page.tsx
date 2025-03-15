@@ -1,47 +1,65 @@
-"use client"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Input } from "@/components/ui/input"
-import PageContainer from "@/components/page-container"
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import DashboardLayout from "@/components/dashboard-layout"
-import { ConfettiButton } from "@/components/magicui/confetti"
-import { Bot, Globe, Loader, Plus, Trash2 } from "lucide-react"
+"use client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import PageContainer from "@/components/page-container";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import DashboardLayout from "@/components/dashboard-layout";
+import { ConfettiButton } from "@/components/magicui/confetti";
+import { Bot, Globe, Loader, Plus, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { useRef, useState, useTransition } from "react"
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useRef, useState, useTransition } from "react";
 
-import { toast } from "sonner"
+import { toast } from "sonner";
 
-import { useAutosizeTextArea } from "@/components/AutoSizeTextArea"
-import MultipleSelector from "@/components/MultiSelector"
-import { FileUploader } from "@/components/file-uploader"
-import { useUploadFile } from "@/hooks/use-upload-file"
-import { useRouter } from "next/navigation"
-import { BorderBeam } from "@/components/magicui/border-beam"
-import AIChat from "@/components/common/AIChat"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
+import { useAutosizeTextArea } from "@/components/AutoSizeTextArea";
+import MultipleSelector from "@/components/MultiSelector";
+import { FileUploader } from "@/components/file-uploader";
+import { useUploadFile } from "@/hooks/use-upload-file";
+import { useRouter } from "next/navigation";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import AIChat from "@/components/common/AIChat";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { uploadImage } from "@/app/blogs/new/actions";
+import { createWebsite } from "./actions";
 
 // Schema based on the Mongoose model
 const schema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Title cannot be more than 100 characters"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(100, "Title cannot be more than 100 characters"),
   clientName: z.string().min(1, "Client name is required"),
-  url: z.string().min(1, "Website URL is required").url("Please enter a valid URL"),
+  url: z
+    .string()
+    .min(1, "Website URL is required")
+    .url("Please enter a valid URL"),
   thumbnailImage: z.instanceof(File).optional(),
-  description: z.string().min(1, "Description is required").max(500, "Description cannot be more than 500 characters"),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(500, "Description cannot be more than 500 characters"),
   role: z.string().min(1, "Role is required"),
-  contentSections: z.array(
+   contentSections: z.array(
     z.object({
       title: z.string().min(1, "Section title is required"),
       content: z.string().min(1, "Section content is required"),
-      image: z.instanceof(File).optional(),
-    }),
+      image: z.any().optional(),
+    })
   ),
+
   testimonial: z
     .object({
       quote: z.string().optional(),
@@ -51,30 +69,13 @@ const schema = z.object({
     .optional(),
   completionDate: z.date().optional(),
   featured: z.boolean().default(false),
-})
+});
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>;
 
-// Mock function for creating website - replace with actual implementation
-const createWebsite = async (data: any) => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return { success: true }
-}
 
-// Mock function for uploading image - replace with actual implementation
-const uploadImage = async ({ formData }: { formData: FormData }) => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return {
-    success: true,
-    data: {
-      data: {
-        secure_url: `/placeholder.svg?height=400&width=800`,
-      },
-    },
-  }
-}
+
+
 
 const ROLE_OPTIONS = [
   { value: "frontend", label: "Frontend Developer" },
@@ -83,7 +84,7 @@ const ROLE_OPTIONS = [
   { value: "designer", label: "UI/UX Designer" },
   { value: "consultant", label: "Technical Consultant" },
   { value: "architect", label: "Solution Architect" },
-]
+];
 
 const TAG_OPTIONS = [
   { value: "react", label: "React" },
@@ -101,30 +102,37 @@ const TAG_OPTIONS = [
   { value: "seo", label: "SEO Optimized" },
   { value: "accessibility", label: "Accessibility" },
   { value: "pwa", label: "Progressive Web App" },
-]
+];
 
 function WebsiteFormPage() {
-  const [text, setText] = useState("")
-  const router = useRouter()
-  const [aiVisible, setAiVisible] = useState(false)
-  const [websiteTags, setWebsiteTags] = useState<string[]>([])
+  const [text, setText] = useState("");
+  const router = useRouter();
+  const [aiVisible, setAiVisible] = useState(false);
+  const [websiteTags, setWebsiteTags] = useState<string[]>([]);
 
-  const { onUpload, progresses, uploadedFiles, isUploading } = useUploadFile("imageUploader", {
-    defaultUploadedFiles: [],
-  })
+  const { onUpload, progresses, uploadedFiles, isUploading } = useUploadFile(
+    "imageUploader",
+    {
+      defaultUploadedFiles: [],
+    }
+  );
 
-  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useAutosizeTextArea({
     textAreaRef,
     triggerAutoSize: text,
     minHeight: 130,
     maxHeight: 100,
-  })
+  });
 
-  const [imageUploadPending, startImageTransition] = useTransition()
-  const [formPending, startFormTransition] = useTransition()
-  const [thumbnailImageUrl, setThumbnailImageUrl] = useState<string | null>(null)
-  const [contentSectionImages, setContentSectionImages] = useState<(string | null)[]>([])
+  const [imageUploadPending, startImageTransition] = useTransition();
+  const [formPending, startFormTransition] = useTransition();
+  const [thumbnailImageUrl, setThumbnailImageUrl] = useState<string | null>(
+    null
+  );
+  const [contentSectionImages, setContentSectionImages] = useState<
+    (string | null)[]
+  >([]);
 
   const {
     control,
@@ -150,30 +158,33 @@ function WebsiteFormPage() {
       completionDate: new Date(),
       featured: false,
     },
-  })
+    shouldUnregister: true,
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "contentSections",
-  })
+  });
 
   const onSubmit = async (data: FormValues) => {
     if (imageUploadPending) {
-      toast.error("Please wait while we upload images")
-      return
+      toast.error("Please wait while we upload images");
+      return;
     }
 
     if (!data.thumbnailImage) {
-      toast.error("Please upload a thumbnail image")
-      return
+      toast.error("Please upload a thumbnail image");
+      return;
     }
 
     try {
-      const contentSectionsWithImages = data.contentSections.map((section, index) => ({
-        title: section.title,
-        content: section.content,
-        image: contentSectionImages[index] || "",
-      }))
+      const contentSectionsWithImages = data.contentSections.map(
+        (section, index) => ({
+          title: section.title,
+          content: section.content,
+          image: contentSectionImages[index] || "",
+        })
+      );
 
       const payload = {
         title: data.title,
@@ -187,69 +198,71 @@ function WebsiteFormPage() {
         tags: websiteTags,
         completionDate: data.completionDate,
         featured: data.featured,
-      }
+      };
 
       startFormTransition(async () => {
-        const result = await createWebsite(payload)
+        const result = await createWebsite(payload);
         if (result.success) {
-          router.replace("/websites")
-          toast.success("Website project created successfully!")
+          router.replace("/websites/page/1 ");
+          toast.success("Website project created successfully!");
         } else {
-          toast.error("Could not create website project")
+          toast.error("Could not create website project");
         }
-      })
+      });
     } catch (error) {
-      console.error("Error creating website project:", error)
+      console.error("Error creating website project:", error);
       toast.error("Could not create website project", {
         description: error instanceof Error ? error.message : "Unknown error",
-      })
+      });
     }
-  }
+  };
 
-//   const handleImageUpload = async (file: File, index?: number) => {
-//     if (!file) return null
+    const handleImageUpload = async (file: File, index?: number) => {
+      if (!file) return null
 
-//     try {
-//       const formData = new FormData()
-//       formData.append("image", file)
+      try {
+        const formData = new FormData()
+        formData.append("image", file)
 
-//       startImageTransition(async () => {
-//         const result = await uploadImage({ formData })
-//         if (result.success) {
-//           const imageUrl = result.data?.data?.secure_url
+        
+          const result = await uploadImage({ formData })
+          if (result.success) {
+            const imageUrl = result.data?.data?.secure_url
 
-//           if (index !== undefined) {
-//             // Content section image
-//             setContentSectionImages((prev) => {
-//               const newImages = [...prev]
-//               newImages[index] = imageUrl
-//               return newImages
-//             })
-//             toast.success(`Section image ${index + 1} uploaded successfully!`)
-//           } else {
-//             // Thumbnail image
-//             setThumbnailImageUrl(imageUrl)
-//             toast.success("Thumbnail image uploaded successfully!")
-//           }
+            if (index !== undefined) {
+              // Content section image
+              setContentSectionImages((prev) => {
+                const newImages = [...prev]
+                newImages[index] = imageUrl
+                return newImages
+              })
+              toast.success(`Section image ${index + 1} uploaded successfully!`)
+            } else {
+              // Thumbnail image
+              setThumbnailImageUrl(imageUrl)
+              toast.success("Thumbnail image uploaded successfully!")
+            }
 
-//           return imageUrl
-//         } else {
-//           toast.error("Could not upload image")
-//           return null
-//         }
-//       })
-//     } catch (error) {
-//       console.error("Error uploading image:", error)
-//       return null
-//     }
-//   }
+            return imageUrl
+          } else {
+            toast.error("Could not upload image")
+            return null
+          }
+        
+      } catch (error) {
+        console.error("Error uploading image:", error)
+        return null
+      }
+    }
 
   return (
     <PageContainer>
       {formPending && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-lg">
           <Loader className="h-6 w-6 text-primary animate-spin" />
-          <p className="mt-4 text-primary text-lg">{"Please wait while we create the website project for you..."}</p>
+          <p className="mt-4 text-primary text-lg">
+            {"Please wait while we create the website project for you..."}
+          </p>
         </div>
       )}
 
@@ -260,18 +273,21 @@ function WebsiteFormPage() {
               <Globe className="h-7 w-7 text-primary" />
               <CardTitle className="text-2xl">Create Website Project</CardTitle>
             </div>
-            <p className="text-muted-foreground">Add a new website project to your portfolio.</p>
+            <p className="text-muted-foreground">
+              Add a new website project to your portfolio.
+            </p>
           </div>
 
           <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={() => {
-                setAiVisible(!aiVisible)
+                setAiVisible(!aiVisible);
               }}
               className="relative overflow-hidden"
             >
-              <Bot className="h-4 w-4 mr-2" /> {aiVisible ? "Disable" : "Use"} AI
+              <Bot className="h-4 w-4 mr-2" /> {aiVisible ? "Disable" : "Use"}{" "}
+              AI
               <BorderBeam
                 size={40}
                 initialOffset={20}
@@ -285,7 +301,10 @@ function WebsiteFormPage() {
             </Button>
 
             {aiVisible && (
-              <Select defaultValue="gemini" onValueChange={(value) => console.log(value)}>
+              <Select
+                defaultValue="gemini"
+                onValueChange={(value) => console.log(value)}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select AI Model" />
                 </SelectTrigger>
@@ -299,7 +318,11 @@ function WebsiteFormPage() {
 
         <div className="grid grid-cols-12 gap-3">
           {/* Website Form */}
-          <div className={`${aiVisible ? "col-span-12 lg:col-span-7" : "col-span-12"}`}>
+          <div
+            className={`${
+              aiVisible ? "col-span-12 lg:col-span-7" : "col-span-12"
+            }`}
+          >
             <Card>
               <CardContent className="pt-6">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -311,16 +334,32 @@ function WebsiteFormPage() {
                       <Label htmlFor="title">
                         Title<span className="text-red-400">*</span>
                       </Label>
-                      <Controller name="title" control={control} render={({ field }) => <Input {...field} />} />
-                      {errors?.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+                      <Controller
+                        name="title"
+                        control={control}
+                        render={({ field }) => <Input {...field} />}
+                      />
+                      {errors?.title && (
+                        <p className="text-red-500 text-sm">
+                          {errors.title.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="clientName">
                         Client Name<span className="text-red-400">*</span>
                       </Label>
-                      <Controller name="clientName" control={control} render={({ field }) => <Input {...field} />} />
-                      {errors?.clientName && <p className="text-red-500 text-sm">{errors.clientName.message}</p>}
+                      <Controller
+                        name="clientName"
+                        control={control}
+                        render={({ field }) => <Input {...field} />}
+                      />
+                      {errors?.clientName && (
+                        <p className="text-red-500 text-sm">
+                          {errors.clientName.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -330,9 +369,15 @@ function WebsiteFormPage() {
                       <Controller
                         name="url"
                         control={control}
-                        render={({ field }) => <Input {...field} placeholder="https://example.com" />}
+                        render={({ field }) => (
+                          <Input {...field} placeholder="https://example.com" />
+                        )}
                       />
-                      {errors?.url && <p className="text-red-500 text-sm">{errors.url.message}</p>}
+                      {errors?.url && (
+                        <p className="text-red-500 text-sm">
+                          {errors.url.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -346,9 +391,9 @@ function WebsiteFormPage() {
                           <FileUploader
                             value={field.value ? [field.value] : []}
                             onValueChange={async (files) => {
-                              field.onChange(files[0])
+                              field.onChange(files[0]);
                               if (files[0]) {
-                                // await handleImageUpload(files[0])
+                                await handleImageUpload(files[0]);
                               }
                             }}
                             maxFileCount={1}
@@ -359,7 +404,9 @@ function WebsiteFormPage() {
                         )}
                       />
                       {errors?.thumbnailImage && (
-                        <p className="text-red-500 text-sm">{errors.thumbnailImage.message}</p>
+                        <p className="text-red-500 text-sm">
+                          {errors.thumbnailImage.message}
+                        </p>
                       )}
                     </div>
 
@@ -371,10 +418,18 @@ function WebsiteFormPage() {
                         name="description"
                         control={control}
                         render={({ field }) => (
-                          <Textarea {...field} placeholder="Describe the website project" className="min-h-[100px]" />
+                          <Textarea
+                            {...field}
+                            placeholder="Describe the website project"
+                            className="min-h-[100px]"
+                          />
                         )}
                       />
-                      {errors?.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+                      {errors?.description && (
+                        <p className="text-red-500 text-sm">
+                          {errors.description.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -385,13 +440,19 @@ function WebsiteFormPage() {
                         name="role"
                         control={control}
                         render={({ field }) => (
-                          <Select value={field.value} onValueChange={field.onChange}>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="Select your role" />
                             </SelectTrigger>
                             <SelectContent>
                               {ROLE_OPTIONS.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
                                   {option.label}
                                 </SelectItem>
                               ))}
@@ -399,14 +460,18 @@ function WebsiteFormPage() {
                           </Select>
                         )}
                       />
-                      {errors?.role && <p className="text-red-500 text-sm">{errors.role.message}</p>}
+                      {errors?.role && (
+                        <p className="text-red-500 text-sm">
+                          {errors.role.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="tags">Tags</Label>
                       <MultipleSelector
                         onChange={(value: any) => {
-                          setWebsiteTags(value.map((item: any) => item.value))
+                          setWebsiteTags(value.map((item: any) => item.value));
                         }}
                         defaultOptions={TAG_OPTIONS}
                         placeholder="Select/Make Tags..."
@@ -428,8 +493,16 @@ function WebsiteFormPage() {
                           render={({ field }) => (
                             <Input
                               type="date"
-                              value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
-                              onChange={(e) => field.onChange(new Date(e.target.value))}
+                              value={
+                                field.value
+                                  ? new Date(field.value)
+                                      .toISOString()
+                                      .split("T")[0]
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                field.onChange(new Date(e.target.value))
+                              }
                             />
                           )}
                         />
@@ -441,9 +514,16 @@ function WebsiteFormPage() {
                           <Controller
                             name="featured"
                             control={control}
-                            render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
+                            render={({ field }) => (
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            )}
                           />
-                          <span className="text-sm text-muted-foreground">Display this project prominently</span>
+                          <span className="text-sm text-muted-foreground">
+                            Display this project prominently
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -459,18 +539,28 @@ function WebsiteFormPage() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => append({ title: "", content: "", image: undefined })}
+                        onClick={() =>
+                          append({ title: "", content: "", image: undefined })
+                        }
                       >
                         <Plus className="h-4 w-4 mr-2" /> Add Section
                       </Button>
                     </div>
 
                     {fields.map((field, index) => (
-                      <div key={field.id} className="space-y-4 p-4 border rounded-md">
+                      <div
+                        key={field.id}
+                        className="space-y-4 p-4 border rounded-md"
+                      >
                         <div className="flex justify-between items-center">
                           <h4 className="font-medium">Section {index + 1}</h4>
                           {index > 0 && (
-                            <Button type="button" variant="ghost" size="sm" onClick={() => remove(index)}>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => remove(index)}
+                            >
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                           )}
@@ -480,27 +570,54 @@ function WebsiteFormPage() {
                           <Label htmlFor={`contentSections.${index}.title`}>
                             Section Title<span className="text-red-400">*</span>
                           </Label>
-                          <Input {...register(`contentSections.${index}.title` as const)} />
+                          <Input
+                            {...register(
+                              `contentSections.${index}.title` as const
+                            )}
+                            onChange={(e) => {
+                              setValue(
+                                `contentSections.${index}.title`,
+                                e.target.value,
+                                { shouldValidate: true }
+                              );
+                            }}
+                          />
                           {errors?.contentSections?.[index]?.title && (
-                            <p className="text-red-500 text-sm">{errors.contentSections[index]?.title?.message}</p>
+                            <p className="text-red-500 text-sm">
+                              {errors.contentSections[index]?.title?.message}
+                            </p>
                           )}
                         </div>
 
                         <div className="space-y-2">
                           <Label htmlFor={`contentSections.${index}.content`}>
-                            Section Content<span className="text-red-400">*</span>
+                            Section Content
+                            <span className="text-red-400">*</span>
                           </Label>
                           <Textarea
-                            {...register(`contentSections.${index}.content` as const)}
+                            {...register(
+                              `contentSections.${index}.content` as const
+                            )}
+                            onChange={(e) => {
+                              setValue(
+                                `contentSections.${index}.content`,
+                                e.target.value,
+                                { shouldValidate: true }
+                              );
+                            }}
                             className="min-h-[100px]"
                           />
                           {errors?.contentSections?.[index]?.content && (
-                            <p className="text-red-500 text-sm">{errors.contentSections[index]?.content?.message}</p>
+                            <p className="text-red-500 text-sm">
+                              {errors.contentSections[index]?.content?.message}
+                            </p>
                           )}
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor={`contentSections.${index}.image`}>Section Image</Label>
+                          <Label htmlFor={`contentSections.${index}.image`}>
+                            Section Image
+                          </Label>
                           <Controller
                             name={`contentSections.${index}.image` as const}
                             control={control}
@@ -508,9 +625,14 @@ function WebsiteFormPage() {
                               <FileUploader
                                 value={field.value ? [field.value] : []}
                                 onValueChange={async (files) => {
-                                  field.onChange(files[0])
+                                  field.onChange(files[0]);
                                   if (files[0]) {
-                                    // await handleImageUpload(files[0], index)
+                                    await handleImageUpload(files[0], index);
+                                    setValue(
+                                      `contentSections.${index}.image`,
+                                      files[0],
+                                      { shouldValidate: true }
+                                    );
                                   }
                                 }}
                                 maxFileCount={1}
@@ -529,7 +651,9 @@ function WebsiteFormPage() {
 
                   {/* Testimonial */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Testimonial (Optional)</h3>
+                    <h3 className="text-lg font-medium">
+                      Testimonial (Optional)
+                    </h3>
 
                     <div className="space-y-2">
                       <Label htmlFor="testimonial.quote">Quote</Label>
@@ -537,7 +661,11 @@ function WebsiteFormPage() {
                         name="testimonial.quote"
                         control={control}
                         render={({ field }) => (
-                          <Textarea {...field} placeholder="Client testimonial quote" className="min-h-[80px]" />
+                          <Textarea
+                            {...field}
+                            placeholder="Client testimonial quote"
+                            className="min-h-[80px]"
+                          />
                         )}
                       />
                     </div>
@@ -548,7 +676,9 @@ function WebsiteFormPage() {
                         <Controller
                           name="testimonial.author"
                           control={control}
-                          render={({ field }) => <Input {...field} placeholder="Client name" />}
+                          render={({ field }) => (
+                            <Input {...field} placeholder="Client name" />
+                          )}
                         />
                       </div>
 
@@ -557,18 +687,26 @@ function WebsiteFormPage() {
                         <Controller
                           name="testimonial.position"
                           control={control}
-                          render={({ field }) => <Input {...field} placeholder="Client position" />}
+                          render={({ field }) => (
+                            <Input {...field} placeholder="Client position" />
+                          )}
                         />
                       </div>
                     </div>
                   </div>
 
                   <div className="pt-4">
-                    <ConfettiButton type="submit" disabled={formPending || imageUploadPending} className="flex ml-auto">
+                    <ConfettiButton
+                      type="submit"
+                      disabled={formPending || imageUploadPending}
+                      className="flex ml-auto"
+                    >
                       {formPending || imageUploadPending ? (
                         <span className="flex items-center">
                           <Loader className="mr-2 h-4 w-4 animate-spin" />
-                          {imageUploadPending ? "Uploading Images..." : "Creating Project..."}
+                          {imageUploadPending
+                            ? "Uploading Images..."
+                            : "Creating Project..."}
                         </span>
                       ) : (
                         "Create Website Project"
@@ -585,7 +723,7 @@ function WebsiteFormPage() {
         </div>
       </div>
     </PageContainer>
-  )
+  );
 }
 
 export default function WebsiteForm() {
@@ -593,6 +731,5 @@ export default function WebsiteForm() {
     <DashboardLayout>
       <WebsiteFormPage />
     </DashboardLayout>
-  )
+  );
 }
-

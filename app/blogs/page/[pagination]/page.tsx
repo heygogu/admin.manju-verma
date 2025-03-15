@@ -136,7 +136,7 @@ function BlogPage() {
   };
   const handleDeleteBlog = (id: string) => async () => {
     try {
-      await axios.delete(`/api/blog/delete/${id}`);
+      await axios.delete(`/api/blog/crud/${id}`);
       initData(false);
     } catch (error) {
       console.error("Error deleting blog:", error);

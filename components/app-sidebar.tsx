@@ -67,12 +67,12 @@ const data = {
     {
       title: "Emails",
       icon: Mail,
-      url: "/mails/page/1",
+      url: "/emails/page/1",
     },
     {
       title: "Websites",
       icon: Code2,
-      url: "/webistes/page/1",
+      url: "/websites/page/1",
     },
     
 
