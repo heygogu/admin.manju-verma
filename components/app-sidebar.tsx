@@ -74,6 +74,11 @@ const data = {
       icon: Code2,
       url: "/websites/page/1",
     },
+    {
+      title:"Testimonials",
+      icon: MessageSquare,
+      url:"/testimonials/page/1"
+    }
     
 
   ],

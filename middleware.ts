@@ -24,6 +24,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+
   if (req.nextUrl.pathname === '/api/login' || req.nextUrl.pathname === '/api/logout'|| req.nextUrl.pathname === '/api/upload-image') { 
     return NextResponse.next();
   }
@@ -47,6 +48,12 @@ export async function middleware(req: NextRequest) {
   console.log("Middleware Token:", token);
 
   const isValid = await validateToken(token);
+    if(req.nextUrl.pathname === '/' && isValid) {
+      //redirect to dashboard
+      return NextResponse.redirect(new URL('/dashboard', req
+      .url));
+    }
+
   if (!isValid) {
     console.log("Middleware Token Invalid");
     // Handle differently for API and page requests
