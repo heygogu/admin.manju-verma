@@ -32,7 +32,7 @@ import AIChat from "@/components/common/AIChat";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { BlogEditor } from "@/components/blog-editor";
+import BlogEditor from "@/components/blog-editor";
 import { createEmail } from "./actions";
 import { uploadImage } from "@/app/blogs/new/actions";
 
@@ -67,8 +67,6 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
-
-
 
 const INDUSTRY_OPTIONS = [
   { value: "technology", label: "Technology" },
@@ -165,7 +163,7 @@ function EmailFormPage() {
       return;
     }
 
-    if(!emailContent){
+    if (!emailContent) {
       toast.error("Please provide email content");
       return;
     }
@@ -231,40 +229,39 @@ function EmailFormPage() {
   return (
     <PageContainer>
       {formPending && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-lg">
-          <Loader className="h-6 w-6 text-primary animate-spin" />
-          <p className="mt-4 text-primary text-lg">
+        <div className='fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-lg'>
+          <Loader className='h-6 w-6 text-primary animate-spin' />
+          <p className='mt-4 text-primary text-lg'>
             {"Please wait while we create the email for you..."}
           </p>
         </div>
       )}
 
-      <div className="space-y-8">
-        <div className="flex justify-between items-center">
+      <div className='space-y-8'>
+        <div className='flex justify-between items-center'>
           <div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-7 w-7 text-primary" />
-              <CardTitle className="text-2xl">Create Email</CardTitle>
+            <div className='flex items-center gap-2'>
+              <Mail className='h-7 w-7 text-primary' />
+              <CardTitle className='text-2xl'>Create Email</CardTitle>
             </div>
-            <p className="text-muted-foreground">
+            <p className='text-muted-foreground'>
               Add a new email to your portfolio.
             </p>
           </div>
 
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={() => {
                 setAiVisible(!aiVisible);
               }}
-              className="relative overflow-hidden"
-            >
-              <Bot className="h-4 w-4 mr-2" /> {aiVisible ? "Disable" : "Use"}{" "}
+              className='relative overflow-hidden'>
+              <Bot className='h-4 w-4 mr-2' /> {aiVisible ? "Disable" : "Use"}{" "}
               AI
               <BorderBeam
                 size={40}
                 initialOffset={20}
-                className="from-transparent via-blue-500 to-transparent"
+                className='from-transparent via-blue-500 to-transparent'
                 transition={{
                   type: "spring",
                   stiffness: 60,
@@ -275,72 +272,70 @@ function EmailFormPage() {
 
             {aiVisible && (
               <Select
-                defaultValue="gemini"
-                onValueChange={(value) => console.log(value)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select AI Model" />
+                defaultValue='gemini'
+                onValueChange={(value) => console.log(value)}>
+                <SelectTrigger className='w-[180px]'>
+                  <SelectValue placeholder='Select AI Model' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="gemini">Gemini</SelectItem>
+                  <SelectItem value='gemini'>Gemini</SelectItem>
                 </SelectContent>
               </Select>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-3">
+        <div className='grid grid-cols-12 gap-3'>
           {/* Email Form */}
           <div
             className={`${
               aiVisible ? "col-span-12 lg:col-span-7" : "col-span-12"
-            }`}
-          >
+            }`}>
             <Card>
-              <CardContent className="pt-6">
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <CardContent className='pt-6'>
+                <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
                   {/* Basic Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Basic Information</h3>
+                  <div className='space-y-4'>
+                    <h3 className='text-lg font-medium'>Basic Information</h3>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="title">
-                        Title<span className="text-red-400">*</span>
+                    <div className='space-y-2'>
+                      <Label htmlFor='title'>
+                        Title<span className='text-red-400'>*</span>
                       </Label>
                       <Controller
-                        name="title"
+                        name='title'
                         control={control}
                         render={({ field }) => <Input {...field} />}
                       />
                       {errors?.title && (
-                        <p className="text-red-500 text-sm">
+                        <p className='text-red-500 text-sm'>
                           {errors.title.message}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="clientName">
-                        Client Name<span className="text-red-400">*</span>
+                    <div className='space-y-2'>
+                      <Label htmlFor='clientName'>
+                        Client Name<span className='text-red-400'>*</span>
                       </Label>
                       <Controller
-                        name="clientName"
+                        name='clientName'
                         control={control}
                         render={({ field }) => <Input {...field} />}
                       />
                       {errors?.clientName && (
-                        <p className="text-red-500 text-sm">
+                        <p className='text-red-500 text-sm'>
                           {errors.clientName.message}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="thumbnailImage">
-                        Thumbnail Image<span className="text-red-400">*</span>
+                    <div className='space-y-2'>
+                      <Label htmlFor='thumbnailImage'>
+                        Thumbnail Image<span className='text-red-400'>*</span>
                       </Label>
                       <Controller
-                        name="thumbnailImage"
+                        name='thumbnailImage'
                         control={control}
                         render={({ field }) => (
                           <FileUploader
@@ -351,31 +346,28 @@ function EmailFormPage() {
                               try {
                                 const formData = new FormData();
                                 formData.append("image", files[0]);
-                                
-                                  const result = await uploadImage({
-                                    formData,
-                                  });
-                                  if (result.success) {
-                                    toast.success(
-                                      "Thumbnail Image Uploaded successfully!"
-                                    );
-                                    // console.log(result.data?.data?.secure_url,"from cloudinary")
 
-                                    setThumbnailImageUrl(
-                                      result.data?.data?.secure_url
-                                    );
-                                    return result.data?.data?.secure_url;
-                                  } else {
-                                    toast.error(
-                                      "Could not upload thumbnail image",
-                                      {
-                                        description:
-                                         
-                                          "Error uploading image.",
-                                      }
-                                    );
-                                  }
-                                
+                                const result = await uploadImage({
+                                  formData,
+                                });
+                                if (result.success) {
+                                  toast.success(
+                                    "Thumbnail Image Uploaded successfully!"
+                                  );
+                                  // console.log(result.data?.data?.secure_url,"from cloudinary")
+
+                                  setThumbnailImageUrl(
+                                    result.data?.data?.secure_url
+                                  );
+                                  return result.data?.data?.secure_url;
+                                } else {
+                                  toast.error(
+                                    "Could not upload thumbnail image",
+                                    {
+                                      description: "Error uploading image.",
+                                    }
+                                  );
+                                }
                               } catch (error) {
                                 console.error("Error uploading image:", error);
                                 return null;
@@ -389,96 +381,93 @@ function EmailFormPage() {
                         )}
                       />
                       {errors?.thumbnailImage && (
-                        <p className="text-red-500 text-sm">
+                        <p className='text-red-500 text-sm'>
                           {errors.thumbnailImage.message}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="description">
-                        Description<span className="text-red-400">*</span>
+                    <div className='space-y-2'>
+                      <Label htmlFor='description'>
+                        Description<span className='text-red-400'>*</span>
                       </Label>
                       <Controller
-                        name="description"
+                        name='description'
                         control={control}
                         render={({ field }) => (
                           <Textarea
                             {...field}
-                            placeholder="Describe the email campaign"
-                            className="min-h-[100px]"
+                            placeholder='Describe the email campaign'
+                            className='min-h-[100px]'
                           />
                         )}
                       />
                       {errors?.description && (
-                        <p className="text-red-500 text-sm">
+                        <p className='text-red-500 text-sm'>
                           {errors.description.message}
                         </p>
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="emailType">
-                          Email Type<span className="text-red-400">*</span>
+                    <div className='grid grid-cols-2 gap-4'>
+                      <div className='space-y-2'>
+                        <Label htmlFor='emailType'>
+                          Email Type<span className='text-red-400'>*</span>
                         </Label>
                         <Controller
-                          name="emailType"
+                          name='emailType'
                           control={control}
                           render={({ field }) => (
                             <Select
                               value={field.value}
-                              onValueChange={field.onChange}
-                            >
+                              onValueChange={field.onChange}>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select email type" />
+                                <SelectValue placeholder='Select email type' />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="Newsletter">
+                                <SelectItem value='Newsletter'>
                                   Newsletter
                                 </SelectItem>
-                                <SelectItem value="Marketing">
+                                <SelectItem value='Marketing'>
                                   Marketing
                                 </SelectItem>
-                                <SelectItem value="Transactional">
+                                <SelectItem value='Transactional'>
                                   Transactional
                                 </SelectItem>
-                                <SelectItem value="Promotional">
+                                <SelectItem value='Promotional'>
                                   Promotional
                                 </SelectItem>
-                                <SelectItem value="Other">Other</SelectItem>
+                                <SelectItem value='Other'>Other</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
                         />
                         {errors?.emailType && (
-                          <p className="text-red-500 text-sm">
+                          <p className='text-red-500 text-sm'>
                             {errors.emailType.message}
                           </p>
                         )}
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="industry">
-                          Industry<span className="text-red-400">*</span>
+                      <div className='space-y-2'>
+                        <Label htmlFor='industry'>
+                          Industry<span className='text-red-400'>*</span>
                         </Label>
                         <Controller
-                          name="industry"
+                          name='industry'
                           control={control}
                           render={({ field }) => (
                             <Select
                               value={field.value}
-                              onValueChange={field.onChange}
-                            >
+                              onValueChange={field.onChange}>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select industry" />
+                                <SelectValue placeholder='Select industry' />
                               </SelectTrigger>
                               <SelectContent>
                                 {INDUSTRY_OPTIONS.map((option) => (
                                   <SelectItem
                                     key={option.value}
-                                    value={option.value}
-                                  >
+                                    value={option.value}>
                                     {option.label}
                                   </SelectItem>
                                 ))}
@@ -487,55 +476,55 @@ function EmailFormPage() {
                           )}
                         />
                         {errors?.industry && (
-                          <p className="text-red-500 text-sm">
+                          <p className='text-red-500 text-sm'>
                             {errors.industry.message}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="subject">
-                        Email Subject<span className="text-red-400">*</span>
+                    <div className='space-y-2'>
+                      <Label htmlFor='subject'>
+                        Email Subject<span className='text-red-400'>*</span>
                       </Label>
                       <Controller
-                        name="subject"
+                        name='subject'
                         control={control}
                         render={({ field }) => <Input {...field} />}
                       />
                       {errors?.subject && (
-                        <p className="text-red-500 text-sm">
+                        <p className='text-red-500 text-sm'>
                           {errors.subject.message}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="tags">Tags</Label>
+                    <div className='space-y-2'>
+                      <Label htmlFor='tags'>Tags</Label>
                       <MultipleSelector
                         onChange={(value: any) => {
                           setEmailTags(value.map((item: any) => item.value));
                         }}
                         defaultOptions={TAG_OPTIONS}
-                        placeholder="Select/Make Tags..."
+                        placeholder='Select/Make Tags...'
                         creatable
                         emptyIndicator={
-                          <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                          <p className='text-center text-lg leading-10 text-gray-600 dark:text-gray-400'>
                             no results found.
                           </p>
                         }
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="completionDate">Completion Date</Label>
+                    <div className='grid grid-cols-2 gap-4'>
+                      <div className='space-y-2'>
+                        <Label htmlFor='completionDate'>Completion Date</Label>
                         <Controller
-                          name="completionDate"
+                          name='completionDate'
                           control={control}
                           render={({ field }) => (
                             <Input
-                              type="date"
+                              type='date'
                               value={
                                 field.value
                                   ? new Date(field.value)
@@ -551,11 +540,11 @@ function EmailFormPage() {
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="featured">Featured Email</Label>
-                        <div className="flex items-center space-x-2 pt-2">
+                      <div className='space-y-2'>
+                        <Label htmlFor='featured'>Featured Email</Label>
+                        <div className='flex items-center space-x-2 pt-2'>
                           <Controller
-                            name="featured"
+                            name='featured'
                             control={control}
                             render={({ field }) => (
                               <Switch
@@ -564,7 +553,7 @@ function EmailFormPage() {
                               />
                             )}
                           />
-                          <span className="text-sm text-muted-foreground">
+                          <span className='text-sm text-muted-foreground'>
                             Display this email prominently
                           </span>
                         </div>
@@ -575,39 +564,38 @@ function EmailFormPage() {
                   <Separator />
 
                   {/* Email Content */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Email Content</h3>
-                    <div className="space-y-2">
-                      <Label htmlFor="emailContent">
-                        Content<span className="text-red-400">*</span>
+                  <div className='space-y-4'>
+                    <h3 className='text-lg font-medium'>Email Content</h3>
+                    <div className='space-y-2'>
+                      <Label htmlFor='emailContent'>
+                        Content<span className='text-red-400'>*</span>
                       </Label>
                       <BlogEditor
                         onChange={(content) => {
                           setEmailContent(content);
                         }}
                       />
-                     
                     </div>
                   </div>
 
                   <Separator />
 
                   {/* Results */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Results (Optional)</h3>
+                  <div className='space-y-4'>
+                    <h3 className='text-lg font-medium'>Results (Optional)</h3>
 
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="results.openRate">Open Rate (%)</Label>
+                    <div className='grid grid-cols-3 gap-4'>
+                      <div className='space-y-2'>
+                        <Label htmlFor='results.openRate'>Open Rate (%)</Label>
                         <Controller
-                          name="results.openRate"
+                          name='results.openRate'
                           control={control}
                           render={({ field }) => (
                             <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
+                              type='number'
+                              min='0'
+                              max='100'
+                              step='0.01'
                               {...field}
                               onChange={(e) =>
                                 field.onChange(
@@ -619,19 +607,19 @@ function EmailFormPage() {
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="results.clickRate">
+                      <div className='space-y-2'>
+                        <Label htmlFor='results.clickRate'>
                           Click Rate (%)
                         </Label>
                         <Controller
-                          name="results.clickRate"
+                          name='results.clickRate'
                           control={control}
                           render={({ field }) => (
                             <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
+                              type='number'
+                              min='0'
+                              max='100'
+                              step='0.01'
                               {...field}
                               onChange={(e) =>
                                 field.onChange(
@@ -643,19 +631,19 @@ function EmailFormPage() {
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="results.conversionRate">
+                      <div className='space-y-2'>
+                        <Label htmlFor='results.conversionRate'>
                           Conversion Rate (%)
                         </Label>
                         <Controller
-                          name="results.conversionRate"
+                          name='results.conversionRate'
                           control={control}
                           render={({ field }) => (
                             <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
+                              type='number'
+                              min='0'
+                              max='100'
+                              step='0.01'
                               {...field}
                               onChange={(e) =>
                                 field.onChange(
@@ -668,31 +656,30 @@ function EmailFormPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="results.notes">Result Notes</Label>
+                    <div className='space-y-2'>
+                      <Label htmlFor='results.notes'>Result Notes</Label>
                       <Controller
-                        name="results.notes"
+                        name='results.notes'
                         control={control}
                         render={({ field }) => (
                           <Textarea
                             {...field}
-                            placeholder="Additional notes about the email performance"
-                            className="min-h-[80px]"
+                            placeholder='Additional notes about the email performance'
+                            className='min-h-[80px]'
                           />
                         )}
                       />
                     </div>
                   </div>
 
-                  <div className="pt-4">
+                  <div className='pt-4'>
                     <ConfettiButton
-                      type="submit"
+                      type='submit'
                       disabled={formPending || imageUploadPending}
-                      className="flex ml-auto"
-                    >
+                      className='flex ml-auto'>
                       {formPending || imageUploadPending ? (
-                        <span className="flex items-center">
-                          <Loader className="mr-2 h-4 w-4 animate-spin" />
+                        <span className='flex items-center'>
+                          <Loader className='mr-2 h-4 w-4 animate-spin' />
                           {imageUploadPending
                             ? "Uploading Image..."
                             : "Creating Email..."}

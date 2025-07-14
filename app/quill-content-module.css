@@ -1,0 +1,199 @@
+.quillContent {
+  line-height: 1.6;
+  color: inherit;
+}
+
+.quillContent h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem 0;
+  line-height: 1.2;
+}
+
+.quillContent h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.75rem 0;
+  line-height: 1.3;
+}
+
+.quillContent h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.quillContent p {
+  margin: 1rem 0;
+  font-size: 1rem;
+}
+
+.quillContent strong {
+  font-weight: 600;
+}
+
+.quillContent em {
+  font-style: italic;
+}
+
+.quillContent u {
+  text-decoration: underline;
+}
+
+.quillContent s {
+  text-decoration: line-through;
+}
+
+.quillContent blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.375rem;
+}
+
+.quillContent pre {
+  background-color: #f3f4f6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  font-family: "Courier New", monospace;
+  font-size: 0.875rem;
+}
+
+.quillContent .ql-syntax {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  font-family: "Courier New", monospace;
+  font-size: 0.875rem;
+}
+
+.quillContent code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: "Courier New", monospace;
+  font-size: 0.875rem;
+}
+
+.quillContent ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.quillContent ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.quillContent li {
+  margin: 0.5rem 0;
+  display: list-item;
+}
+
+.quillContent ul ul,
+.quillContent ol ol,
+.quillContent ul ol,
+.quillContent ol ul {
+  margin: 0.25rem 0;
+}
+
+.quillContent a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.quillContent a:hover {
+  color: #1d4ed8;
+}
+
+.quillContent img {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 0.375rem;
+}
+
+.quillContent .ql-align-center {
+  text-align: center;
+}
+
+.quillContent .ql-align-right {
+  text-align: right;
+}
+
+.quillContent .ql-align-justify {
+  text-align: justify;
+}
+
+.quillContent .ql-indent-1 {
+  padding-left: 3rem;
+}
+
+.quillContent .ql-indent-2 {
+  padding-left: 6rem;
+}
+
+.quillContent .ql-indent-3 {
+  padding-left: 9rem;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .quillContent blockquote {
+    border-left-color: #374151;
+    background-color: #1f2937;
+  }
+
+  .quillContent pre {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+
+  .quillContent code {
+    background-color: #374151;
+    color: #f9fafb;
+  }
+
+  .quillContent a {
+    color: #60a5fa;
+  }
+
+  .quillContent a:hover {
+    color: #93c5fd;
+  }
+}
+
+/* Ensure dark mode works with Tailwind's dark class */
+.dark .quillContent blockquote {
+  border-left-color: #374151;
+  background-color: #1f2937;
+}
+
+.dark .quillContent pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.dark .quillContent code {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .quillContent a {
+  color: #60a5fa;
+}
+
+.dark .quillContent a:hover {
+  color: #93c5fd;
+}
