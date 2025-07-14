@@ -34,58 +34,63 @@ export const DELETE = async (
 };
 
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) => {
+export const GET = async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params
 
-  const { id } = await params;
-  const {
-    title,
-    clientName,
-    url,
-    thumbnailImage,
-    description,
-    role,
-    contentSections,
-    testimonial,
-    tags,
-    completionDate,
-    featured
-  } = await req.json();
+  console.log("@GOT this id", id)
 
   if (!id) {
-    return Response.json({ message: "Blog ID is required" }, { status: 400 });
+    return Response.json({ message: "Blog ID is required" }, { status: 400 })
   }
 
   try {
-    await connectToDatabase();
+    await connectToDatabase()
+    const blogPost = await BlogPost.findById(id)
 
+    if (!blogPost) {
+      return Response.json({ message: "Blog post not found" }, { status: 404 })
+    }
+
+    return Response.json({ success: true, data: blogPost }, { status: 200 })
+  } catch (error) {
+    console.error("Error fetching blog post:", error)
+    return Response.json({ message: "Internal server error" }, { status: 500 })
+  }
+}
+
+// PUT - Update blog post by ID
+export const PUT = async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params
+  const { title, excerpt, content, coverImage, tags, author, status, featured } = await req.json()
+
+  if (!id) {
+    return Response.json({ message: "Blog ID is required" }, { status: 400 })
+  }
+
+  try {
+    await connectToDatabase()
     const updatedBlogPost = await BlogPost.findByIdAndUpdate(
       id,
       {
         title,
-        clientName,
-        url,
-        thumbnailImage,
-        description,
-        role,
-        contentSections: contentSections || [],
-        testimonial,
+        excerpt,
+        content,
         tags: tags || [],
-        completionDate: completionDate || new Date(),
-        featured: featured || false
+        author,
+        status: status || "published",
+        featured: featured || false,
+        updatedAt: new Date(),
       },
-      { new: true }
-    );
+      { new: true },
+    )
 
     if (!updatedBlogPost) {
-      return Response.json({ message: "Blog post not found" }, { status: 404 });
+      return Response.json({ message: "Blog post not found" }, { status: 404 })
     }
 
-    return Response.json(updatedBlogPost, { status: 200 });
+    return Response.json({ success: true, data: updatedBlogPost }, { status: 200 })
   } catch (error) {
-    console.error(error);
-    return Response.json({ message: "Internal server error" }, { status: 500 });
+    console.error("Error updating blog post:", error)
+    return Response.json({ message: "Internal server error" }, { status: 500 })
   }
 }

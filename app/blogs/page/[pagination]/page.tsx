@@ -7,6 +7,7 @@ import {
   Calendar,
   Clock,
   Edit,
+  Edit2,
   Eye,
   FileText,
   Filter,
@@ -162,39 +163,39 @@ function BlogPage() {
     {
       id: "index",
       header: ({ column }) => {
-        return <span className="w-5 ml-1">Sr. No.</span>;
+        return <span className='w-5 ml-1'>Sr. No.</span>;
       },
       cell: ({ row }: { row: any }) => {
         const currentPage = Number(params?.pagination) - 1;
         const itemsPerPage = 10;
         const index = currentPage * itemsPerPage + row.index + 1;
-        return <span className="w-5 pl-3">{index}</span>;
+        return <span className='w-5 pl-3'>{index}</span>;
       },
     },
     {
       accessorKey: "title",
       header: ({ column }: { column: any }) => {
-        return <span className=" ml-5">Title</span>;
+        return <span className=' ml-5'>Title</span>;
       },
       cell: ({ row }: { row: any }) => (
-        <div className="flex items-center gap-2 w-56 ml-4">
-          <Avatar className="h-10 w-10 shadow-md border-2 border-white">
+        <div className='flex items-center gap-2 w-56 ml-4'>
+          <Avatar className='h-10 w-10 shadow-md border-2 border-white'>
             <AvatarImage
-              className="object-cover"
+              className='object-cover'
               src={row?.original?.coverImage}
               alt={row.original.title}
             />
             <AvatarFallback>
-              <Image className="h-4 w-4" />
+              <Image className='h-4 w-4' />
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="font-medium">
+          <div className='flex flex-col'>
+            <span className='font-medium'>
               {row.original?.title?.length > 20
                 ? row.original?.title?.slice(0, 20) + "..."
                 : row.original.title}
             </span>
-            <span className="text-gray-500">
+            <span className='text-gray-500'>
               {row.original.excerpt?.length > 30
                 ? row.original?.excerpt?.slice(0, 30) + "..."
                 : row.original.excerpt}
@@ -208,15 +209,15 @@ function BlogPage() {
       accessorKey: "author",
       header: "Author",
       cell: ({ row }: { row: any }) => (
-        <div className="flex items-center gap-2">
-          <Avatar className="h-10 w-10 shadow-md border-2 border-white">
+        <div className='flex items-center gap-2'>
+          <Avatar className='h-10 w-10 shadow-md border-2 border-white'>
             <AvatarImage
-              className="object-cover"
-              src=""
+              className='object-cover'
+              src=''
               alt={row.original.author}
             />
             <AvatarFallback>
-              <User className="h-4 w-4" />
+              <User className='h-4 w-4' />
             </AvatarFallback>
           </Avatar>
           <span>{row.original?.author}</span>
@@ -227,16 +228,16 @@ function BlogPage() {
       accessorKey: "tags",
       header: "Tags",
       cell: ({ row }: { row: any }) => (
-        <div className="flex flex-wrap gap-1">
+        <div className='flex flex-wrap gap-1'>
           {row.original?.tags
             ?.slice(0, 5)
             ?.map((tag: string, index: number) => (
-              <Badge key={index} variant="default">
+              <Badge key={index} variant='default'>
                 {tag}
               </Badge>
             ))}
           {row.original?.tags?.length > 5 && (
-            <Badge variant="default">+{row.original?.tags?.length - 5}</Badge>
+            <Badge variant='default'>+{row.original?.tags?.length - 5}</Badge>
           )}
         </div>
       ),
@@ -253,8 +254,7 @@ function BlogPage() {
             row.original?.status === "published"
               ? "bg-green-100 text-green-800"
               : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
+          }`}>
           {row.original.status === "published"
             ? "Published"
             : row.original.status === "draft"
@@ -276,20 +276,26 @@ function BlogPage() {
       id: "actions",
       header: "Actions",
       cell: ({ row }: { row: any }) => (
-        <div className="flex gap-2">
+        <div className='flex gap-2'>
           <Link href={`/blogs/${row.original?.slug}/view`} passHref>
-            <Button variant="ghost" size="icon">
-              <Eye className="h-4 w-4" />
+            <Button variant='ghost' size='icon'>
+              <Eye className='h-4 w-4' />
+            </Button>
+          </Link>
+
+          <Link href={`/blogs/${row.original?._id}/edit`} passHref>
+            <Button variant='ghost' size='icon'>
+              <Edit2 className='h-4 w-4' />
             </Button>
           </Link>
 
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
+              <Button variant='ghost' size='icon'>
+                <MoreHorizontal className='h-4 w-4' />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="z-[100]">
+            <DropdownMenuContent align='end' className='z-[100]'>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               {/* <DropdownMenuItem className="cursor-pointer">
                       <Pencil className="mr-2 h-4 w-4" />
@@ -298,10 +304,9 @@ function BlogPage() {
                     <DropdownMenuSeparator /> */}
               <DropdownMenuItem
                 onClick={handleDeleteBlog(row.original?._id)}
-                className="text-red-500 cursor-pointer"
-              >
-                <Trash2 className="mr-2 h-4 text-red-500 w-4" />
-                <span className="text-red-500">Delete</span>
+                className='text-red-500 cursor-pointer'>
+                <Trash2 className='mr-2 h-4 text-red-500 w-4' />
+                <span className='text-red-500'>Delete</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -311,32 +316,31 @@ function BlogPage() {
   ];
   const skeletonColumns = blogColumns.map((column: any) => ({
     ...column,
-    cell: () => <Skeleton className="h-5 p-3 bg-secondary animate-pulse" />,
+    cell: () => <Skeleton className='h-5 p-3 bg-secondary animate-pulse' />,
   }));
 
   return (
     <PageContainer>
-      <div className="space-y-4 grid grid-cols-1">
-        <div className="flex items-center justify-between">
+      <div className='space-y-4 grid grid-cols-1'>
+        <div className='flex items-center justify-between'>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className='text-3xl font-bold tracking-tight'>
               Blog Management
             </h1>
-            <p className="text-muted-foreground">
+            <p className='text-muted-foreground'>
               Create, edit, and manage your blog posts.
             </p>
           </div>
 
-          
-          <Button variant="outline" className="relative overflow-hidden">
-            <Link className="flex gap-2 items-center" href="/blogs/new">
-              <Plus className=" h-4 w-4" />
+          <Button variant='outline' className='relative overflow-hidden'>
+            <Link className='flex gap-2 items-center' href='/blogs/new'>
+              <Plus className=' h-4 w-4' />
               New Blog
             </Link>
             <BorderBeam
               size={40}
               initialOffset={20}
-              className="from-transparent via-yellow-500  to-transparent"
+              className='from-transparent via-yellow-500  to-transparent'
               transition={{
                 type: "spring",
                 stiffness: 60,
@@ -346,24 +350,24 @@ function BlogPage() {
           </Button>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1 ">
-            <Search className="absolute left-2 top-2 mt-[2px] h-4 w-4  text-gray-500" />
+        <div className='flex flex-col md:flex-row gap-4'>
+          <div className='relative flex-1 '>
+            <Search className='absolute left-2 top-2 mt-[2px] h-4 w-4  text-gray-500' />
             <Input
-              placeholder="Search by blog title or description..."
-              className="pl-9"
+              placeholder='Search by blog title or description...'
+              className='pl-9'
               value={searchTerm}
               onChange={(e) => debounceSearch(e.target.value)}
             />
           </div>
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             <Select>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Status" />
+              <SelectTrigger className='w-[150px]'>
+                <SelectValue placeholder='Status' />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="deleted">Deleted</SelectItem>
+                <SelectItem value='published'>Published</SelectItem>
+                <SelectItem value='deleted'>Deleted</SelectItem>
               </SelectContent>
             </Select>
             {/* <Select>
@@ -375,25 +379,28 @@ function BlogPage() {
                       <SelectItem value="developer">Developer</SelectItem>
                     </SelectContent>
                   </Select> */}
-            <Button className="relative overflow-hidden" variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
+            <Button
+              className='relative overflow-hidden'
+              variant='outline'
+              size='icon'>
+              <Filter className='h-4 w-4' />
               {/* <BorderBeam
         duration={6}
         size={400}
         className="from-transparent via-red-500 to-transparent"
       />
      */}
-      <BorderBeam
-              size={20}
-              initialOffset={20}
-              reverse
-              className="from-transparent via-blue-500  to-transparent"
-              transition={{
-                type: "spring",
-                stiffness: 60,
-                damping: 20,
-              }}
-            />
+              <BorderBeam
+                size={20}
+                initialOffset={20}
+                reverse
+                className='from-transparent via-blue-500  to-transparent'
+                transition={{
+                  type: "spring",
+                  stiffness: 60,
+                  damping: 20,
+                }}
+              />
             </Button>
           </div>
         </div>
@@ -412,7 +419,7 @@ function BlogPage() {
           />
         )}
         {blogListing?.data?.length ? (
-          <div className="flex justify-center mt-2">
+          <div className='flex justify-center mt-2'>
             <PaginationCompo
               currentPage={Number(params?.pagination) || 1}
               itemsPerPage={Number(searchParams.get("limit")) || 10}
